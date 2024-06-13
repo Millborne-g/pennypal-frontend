@@ -1,6 +1,11 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react";
 
-import { useGetAllUserQuery, useFindUserByEmailQuery, useRegisterUserMutation } from "../reducers/api/userAPI";
+import {
+    useGetAllUserQuery,
+    useFindUserByEmailQuery,
+    useRegisterUserMutation,
+    useLoginUserQuery,
+} from "../reducers/api/userAPI";
 
 // hooks
 import { setUser } from "../reducers/userSlice";
@@ -8,25 +13,28 @@ import { setUser } from "../reducers/userSlice";
 // redux
 import { useDispatch } from "react-redux";
 
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert, { AlertProps, AlertColor } from '@mui/material/Alert';
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert, { AlertProps, AlertColor } from "@mui/material/Alert";
 
-// for stacbar 
+// for stacbar
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
-    ref,
-  ) {
+    ref
+) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-  });
+});
 
 // error message
 interface ErrorMessage {
     data?: {
-      code?: Number;
+        code?: Number;
     };
-  }
+}
 
-export const useUser = ({email = ""}: {email?: string} = {}) => {
+export const useUser = ({
+    email = "",
+    password = "",
+}: { email?: string; password?: string } = {}) => {
     // for stackbar
     const [stackText, setStackText] = useState("");
     const [openSuccessStack, setOpenSuccessStack] = useState(false);
@@ -50,20 +58,6 @@ export const useUser = ({email = ""}: {email?: string} = {}) => {
         isFetching: allUsersFetching,
         isSuccess: allUsersSuccess,
     } = useGetAllUserQuery();
-
-    // const {
-    //     data: findUser,
-    //     isError: findUserError,
-    //     isLoading: findUserLoading,
-    //     isFetching: findUserFetching,
-    //     isSuccess: findUserSuccess
-    //   }: {
-    //     data?: string;
-    //     isError?: boolean;
-    //     isLoading?: boolean;
-    //     isFetching?: boolean;
-    //     isSuccess?: boolean;
-    //   } = email.trim() !== '' ? useFindUserByEmailQuery(email) : {};
 
     const {
         data: findUser,
@@ -94,29 +88,43 @@ export const useUser = ({email = ""}: {email?: string} = {}) => {
         },
     ] = useRegisterUserMutation();
 
+    const {
+        data: loginUser,
+        isError: loginUserError,
+        isLoading: loginUserLoading,
+        isFetching: loginUserFetching,
+        isSuccess: loginUserSuccess,
+    } = useLoginUserQuery(
+        {
+            email,
+            password,
+        },
+        {
+            skip: email === "" || password === "",
+        }
+    );
+
     // query
-    const successQuery = allUsersSuccess || findUserSuccess;
-    const errorQuery = allUsersError || findUserError;
-    const loadingQuery = allUsersLoading || findUserLoading;
-    const fetchingQuery = allUsersFetching || findUserFetching;
+    const successQuery = allUsersSuccess || findUserSuccess || loginUserSuccess;
+    const errorQuery = allUsersError || findUserError || loginUserError;
+    const loadingQuery = allUsersLoading || findUserLoading || loginUserLoading;
+    const fetchingQuery =
+        allUsersFetching || findUserFetching || loginUserFetching;
 
     // mutation
-    const registerUserSuccessMutation = registerUserSuccess;
-
-    const registerUserLoadingMutation = registerUserLoading;
+    const successMutation = registerUserSuccess;
+    const loadingMutation = registerUserLoading;
 
     // query
     useEffect(() => {
         let message = "";
-        if (findUserError) {
-            console.log("eyyyyy");
-
-            message = "User doesn't exist!";
+        if (errorQuery) {
+            message = "User(s) do not exist!";
             setStackSeverity("error");
             setStackText(message);
             setOpenSuccessStack(true);
         }
-    }, [findUserError, findUserLoading]);
+    }, [errorQuery, loadingQuery]);
 
     // add mutation
     useEffect(() => {
@@ -144,18 +152,16 @@ export const useUser = ({email = ""}: {email?: string} = {}) => {
 
     return {
         allUsers,
+        loginUser,
         registerUser,
-        registerUserSuccessMutation,
-        registerUserLoadingMutation,
-        registerUserErrorMessage,
         findUser,
-        findUserLoading,
-        findUserSuccess,
-        findUserError,
         successQuery,
         errorQuery,
         loadingQuery,
         fetchingQuery,
+        successMutation,
+        loadingMutation,
+        registerUserErrorMessage,
         // Return the Snackbar component as part of the returned object
         SnackbarComponent: (
             <Snackbar
@@ -173,4 +179,4 @@ export const useUser = ({email = ""}: {email?: string} = {}) => {
             </Snackbar>
         ),
     };
-}
+};

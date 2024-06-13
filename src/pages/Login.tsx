@@ -66,9 +66,10 @@ export const Login = () => {
 
     const {
         findUser,
-        findUserLoading,
-        findUserSuccess,
-        findUserError,
+        loadingQuery,
+        fetchingQuery,
+        successQuery,
+        errorQuery,
         SnackbarComponent: loginSnackbar,
     } = useUser({ email: enteredEmail });
 
@@ -135,23 +136,25 @@ export const Login = () => {
     });
 
     useEffect(() => {
-        if (loginWithGoogle) {
-            if (findUserSuccess) {
-                if (findUser) {
-                    dispatch(setUser(findUser));
-                }
-            }
-        } else {
-            if (findUserSuccess) {
-                if (findUser) {
-                    if (
-                        email === findUser.email &&
-                        password === findUser.password
-                    ) {
+        if (!fetchingQuery) {
+            if (loginWithGoogle) {
+                if (!errorQuery) {
+                    if (findUser) {
                         dispatch(setUser(findUser));
-                    } else {
-                        console.log("Sayop");
-                        setFoundUser(true);
+                    }
+                }
+            } else {
+                if (!errorQuery) {
+                    if (findUser) {
+                        if (
+                            email === findUser.email &&
+                            password === findUser.password
+                        ) {
+                            dispatch(setUser(findUser));
+                        } else {
+                            console.log("Sayop");
+                            setFoundUser(true);
+                        }
                     }
                 }
             }
@@ -176,14 +179,21 @@ export const Login = () => {
         //         setLoginWithGoogle(false);
         //     }
         // }
-    }, [findUserLoading, loginWithGoogle, email, password, enteredEmail]);
+    }, [
+        loadingQuery,
+        fetchingQuery,
+        loginWithGoogle,
+        email,
+        password,
+        enteredEmail,
+    ]);
 
     // if findUser error
     useEffect(() => {
-        if (findUserError) {
+        if (errorQuery) {
             setFoundUser(false);
         }
-    }, [findUserError]);
+    }, [errorQuery]);
 
     useEffect(() => {
         if (loginState && userDetails !== undefined) {
@@ -263,12 +273,12 @@ export const Login = () => {
                                 {...register("email")}
                                 error={
                                     !!errors.email ||
-                                    (!loginWithGoogle && findUserError)
+                                    (!loginWithGoogle && errorQuery)
                                 }
                                 helperText={
                                     errors.email?.message ||
                                     (!loginWithGoogle &&
-                                        findUserError &&
+                                        errorQuery &&
                                         "User doesn't exist!")
                                 }
                                 label="Email"

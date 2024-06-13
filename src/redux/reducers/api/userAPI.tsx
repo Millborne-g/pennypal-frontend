@@ -1,4 +1,4 @@
-import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 interface userData {
     _id: number | string;
@@ -48,7 +48,16 @@ export const userAPI = createApi({
             // gina update ra niya tung user sa katung query with 'List' ID
             invalidatesTags: [{ type: "user", id: "LIST" }],
         }),
+        loginUser: builder.query({
+            query: ({ email, password }: { email: string; password: string }) =>
+                `/users/login/${email}/${password}`,
+        }),
     }),
 });
 
-export const { useGetAllUserQuery, useFindUserByEmailQuery, useRegisterUserMutation } = userAPI
+export const {
+    useGetAllUserQuery,
+    useFindUserByEmailQuery,
+    useRegisterUserMutation,
+    useLoginUserQuery
+} = userAPI;

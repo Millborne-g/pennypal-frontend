@@ -76,7 +76,7 @@ export const Signup = () => {
     const [emailAlreadyExist, setEmailAlreadyExist] = useState(false);
     const {
         registerUser,
-        registerUserSuccessMutation,
+        successMutation,
         registerUserErrorMessage,
         SnackbarComponent: registerSnackbar,
     } = useUser({ email: enteredEmail });
@@ -220,10 +220,10 @@ export const Signup = () => {
 
     // register new user
     useEffect(() => {
-        if (registerUserSuccessMutation) {
+        if (successMutation) {
             dispatch(setUser(userDetails));
         }
-    }, [registerUserSuccessMutation]);
+    }, [successMutation]);
 
     useEffect(() => {
         if (loginState) {
