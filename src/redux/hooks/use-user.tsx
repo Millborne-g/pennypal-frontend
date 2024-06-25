@@ -4,7 +4,7 @@ import {
     useGetAllUserQuery,
     useFindUserByEmailQuery,
     useRegisterUserMutation,
-    useLoginUserQuery,
+    useLoginUserMutation,
 } from "../reducers/api/userAPI";
 
 // hooks
@@ -88,32 +88,26 @@ export const useUser = ({
         },
     ] = useRegisterUserMutation();
 
-    const {
-        data: loginUser,
-        isError: loginUserError,
-        isLoading: loginUserLoading,
-        isFetching: loginUserFetching,
-        isSuccess: loginUserSuccess,
-    } = useLoginUserQuery(
+    const [
+        loginUser,
         {
-            email,
-            password,
+            error: loginUserErrorMessage,
+            isError: loginUserError,
+            isLoading: loginUserLoading,
+            isSuccess: loginUserSuccess,
         },
-        {
-            skip: email === "" || password === "",
-        }
-    );
+    ] = useLoginUserMutation();
 
     // query
-    const successQuery = allUsersSuccess || findUserSuccess || loginUserSuccess;
-    const errorQuery = allUsersError || findUserError || loginUserError;
-    const loadingQuery = allUsersLoading || findUserLoading || loginUserLoading;
+    const successQuery = allUsersSuccess || findUserSuccess;
+    const errorQuery = allUsersError || findUserError;
+    const loadingQuery = allUsersLoading || findUserLoading;
     const fetchingQuery =
-        allUsersFetching || findUserFetching || loginUserFetching;
+        allUsersFetching || findUserFetching;
 
     // mutation
-    const successMutation = registerUserSuccess;
-    const loadingMutation = registerUserLoading;
+    const successMutation = registerUserSuccess || loginUserSuccess;
+    const loadingMutation = registerUserLoading || loginUserLoading;
 
     // query
     useEffect(() => {

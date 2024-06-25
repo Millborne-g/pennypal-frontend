@@ -12,7 +12,6 @@ import FormControl from "@mui/material/FormControl";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import GoogleIcon from "@mui/icons-material/Google";
-import Link from "@mui/material/Link";
 import { Container, FormHelperText } from "@mui/material";
 
 // Google Auth
@@ -61,24 +60,29 @@ export const Login = () => {
     const [password, setPassword] = useState("");
 
     const [enteredEmail, setEnteredEmail] = useState("");
+    const [enteredEmailPassword, setEnteredPassword] = useState("");
 
     const [loginWithGoogle, setLoginWithGoogle] = useState(false);
 
+    const [responseDetails, setResponseDetails] = useState<any>();
+
     const {
         findUser,
+        loginUser,
         loadingQuery,
         fetchingQuery,
-        successQuery,
-        errorQuery,
+        // errorQuery,
         SnackbarComponent: loginSnackbar,
-    } = useUser({ email: enteredEmail });
+    } = useUser({ email: enteredEmail, password: enteredEmailPassword });
 
     const [foundUser, setFoundUser] = useState(false);
+    const [userDoesntExist, setUserDoesntExist] = useState<boolean | null>(
+        null
+    );
 
     const loginState = useSelector((state: any) => state.user.login);
     const userDetails = useSelector((state: any) => state.user.user);
     const [showPassword, setShowPassword] = useState(false);
-    const [clickLogin, setClickLogin] = useState(false);
 
     // useform
     const {
@@ -99,18 +103,19 @@ export const Login = () => {
         event.preventDefault();
     };
 
-    const login = (data: formType) => {
+    const login = async (data: formType) => {
         setEmail(data.email);
         setPassword(data.password);
         setEnteredEmail(data.email);
+        setEnteredPassword(data.password);
         setLoginWithGoogle(false);
     };
 
     const continueWithGoogle = () => {
-        setEnteredEmail("");
         setFoundUser(false);
         getGoogleInfo();
         setEnteredEmail(email);
+        setEnteredPassword("googlesignin");
         reset();
         clearErrors();
     };
@@ -136,70 +141,74 @@ export const Login = () => {
     });
 
     useEffect(() => {
-        if (!fetchingQuery) {
-            if (loginWithGoogle) {
-                if (!errorQuery) {
-                    if (findUser) {
-                        dispatch(setUser(findUser));
+        const checkUserCred = async () => {
+            if (email && password) {
+                try {
+                    setUserDoesntExist(null);
+                    let resultloginUser = await loginUser({
+                        email: email,
+                        password: password,
+                    }).unwrap();
+                    if (
+                        resultloginUser.user
+                    ) {
+                        dispatch(setUser(resultloginUser.user));
+                    } else if (!resultloginUser.correctPassword) {
+                        setFoundUser(!resultloginUser.correctPassword);
                     }
-                }
-            } else {
-                if (!errorQuery) {
-                    if (findUser) {
-                        if (
-                            email === findUser.email &&
-                            password === findUser.password
-                        ) {
-                            dispatch(setUser(findUser));
-                        } else {
-                            console.log("Sayop");
-                            setFoundUser(true);
-                        }
-                    }
+                } catch (err) {
+                    setUserDoesntExist(true);
                 }
             }
-        }
-        // if (findUserSuccess) {
-        //     if (findUser) {
-        //         if (loginWithGoogle) {
-        //             dispatch(setUser(findUser));
-        //         } else {
-        //             if (
-        //                 email === findUser.email &&
-        //                 password === findUser.password
-        //             ) {
-        //                 dispatch(setUser(findUser));
-        //             } else {
-        //                 console.log("Sayop");
-        //                 setFoundUser(true);
-        //             }
-        //         }
-        //     } else {
-        //         setEnteredEmail("");
-        //         setLoginWithGoogle(false);
-        //     }
-        // }
-    }, [
-        loadingQuery,
-        fetchingQuery,
-        loginWithGoogle,
-        email,
-        password,
-        enteredEmail,
-    ]);
+        };
+        checkUserCred();
+    }, [email, password]);
 
-    // if findUser error
-    useEffect(() => {
-        if (errorQuery) {
-            setFoundUser(false);
-        }
-    }, [errorQuery]);
+    // -----------------------------------------------------------------------
+    // useEffect(() => {
+    //     if (!fetchingQuery) {
+    //         if (loginWithGoogle) {
+    //             if (!errorQuery) {
+    //                 if (findUser) {
+    //                     dispatch(setUser(findUser));
+    //                 }
+    //             }
+    //         } else {
+    //             if (!errorQuery) {
+    //                 if (findUser) {
+    //                     if (
+    //                         email === findUser.email &&
+    //                         password === findUser.password
+    //                     ) {
+    //                         dispatch(setUser(findUser));
+    //                     } else {
+    //                         setFoundUser(true);
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }, [
+    //     loadingQuery,
+    //     fetchingQuery,
+    //     loginWithGoogle,
+    //     email,
+    //     password,
+    //     enteredEmail,
+    // ]);
 
-    useEffect(() => {
-        if (loginState && userDetails !== undefined) {
-            navigate("/dashboard");
-        }
-    }, [loginState, userDetails]);
+    // // if findUser error
+    // useEffect(() => {
+    //     if (errorQuery) {
+    //         setFoundUser(false);
+    //     }
+    // }, [errorQuery]);
+
+    // useEffect(() => {
+    //     if (loginState && userDetails !== undefined) {
+    //         navigate("/dashboard");
+    //     }
+    // }, [loginState, userDetails]);
 
     return (
         <>
@@ -273,12 +282,12 @@ export const Login = () => {
                                 {...register("email")}
                                 error={
                                     !!errors.email ||
-                                    (!loginWithGoogle && errorQuery)
+                                    (!loginWithGoogle && userDoesntExist || false)
                                 }
                                 helperText={
                                     errors.email?.message ||
                                     (!loginWithGoogle &&
-                                        errorQuery &&
+                                        userDoesntExist &&
                                         "User doesn't exist!")
                                 }
                                 label="Email"

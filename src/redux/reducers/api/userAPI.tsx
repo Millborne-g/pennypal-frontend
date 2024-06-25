@@ -48,9 +48,12 @@ export const userAPI = createApi({
             // gina update ra niya tung user sa katung query with 'List' ID
             invalidatesTags: [{ type: "user", id: "LIST" }],
         }),
-        loginUser: builder.query({
-            query: ({ email, password }: { email: string; password: string }) =>
-                `/users/login/${email}/${password}`,
+        loginUser: builder.mutation({
+            query: ({ email, password }) => ({
+                url: "/user/login",
+                method: "POST",
+                body: { email, password },
+            }),
         }),
     }),
 });
@@ -59,5 +62,5 @@ export const {
     useGetAllUserQuery,
     useFindUserByEmailQuery,
     useRegisterUserMutation,
-    useLoginUserQuery
+    useLoginUserMutation,
 } = userAPI;
