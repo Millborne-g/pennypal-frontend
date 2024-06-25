@@ -59,21 +59,9 @@ export const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const [enteredEmail, setEnteredEmail] = useState("");
-    const [enteredEmailPassword, setEnteredPassword] = useState("");
-
     const [loginWithGoogle, setLoginWithGoogle] = useState(false);
 
-    const [responseDetails, setResponseDetails] = useState<any>();
-
-    const {
-        findUser,
-        loginUser,
-        loadingQuery,
-        fetchingQuery,
-        // errorQuery,
-        SnackbarComponent: loginSnackbar,
-    } = useUser({ email: enteredEmail, password: enteredEmailPassword });
+    const { loginUser } = useUser();
 
     const [foundUser, setFoundUser] = useState(false);
     const [userDoesntExist, setUserDoesntExist] = useState<boolean | null>(
@@ -106,16 +94,12 @@ export const Login = () => {
     const login = async (data: formType) => {
         setEmail(data.email);
         setPassword(data.password);
-        setEnteredEmail(data.email);
-        setEnteredPassword(data.password);
         setLoginWithGoogle(false);
     };
 
     const continueWithGoogle = () => {
         setFoundUser(false);
         getGoogleInfo();
-        setEnteredEmail(email);
-        setEnteredPassword("googlesignin");
         reset();
         clearErrors();
     };
@@ -126,18 +110,14 @@ export const Login = () => {
             fetch(apiUrl)
                 .then((response) => response.json())
                 .then((data) => {
-                    setEnteredEmail(data.email);
-
                     setEmail(data.email);
-                    // setUser(data)
-                    // dispatch(setUser(data));
+                    setPassword("googlesignin");
                     setLoginWithGoogle(true);
                 })
                 .catch((error) => {
                     console.error("Error:", error);
                 });
         },
-        // flow: 'auth-code',
     });
 
     useEffect(() => {
@@ -149,9 +129,7 @@ export const Login = () => {
                         email: email,
                         password: password,
                     }).unwrap();
-                    if (
-                        resultloginUser.user
-                    ) {
+                    if (resultloginUser.user) {
                         dispatch(setUser(resultloginUser.user));
                     } else if (!resultloginUser.correctPassword) {
                         setFoundUser(!resultloginUser.correctPassword);
@@ -164,51 +142,11 @@ export const Login = () => {
         checkUserCred();
     }, [email, password]);
 
-    // -----------------------------------------------------------------------
-    // useEffect(() => {
-    //     if (!fetchingQuery) {
-    //         if (loginWithGoogle) {
-    //             if (!errorQuery) {
-    //                 if (findUser) {
-    //                     dispatch(setUser(findUser));
-    //                 }
-    //             }
-    //         } else {
-    //             if (!errorQuery) {
-    //                 if (findUser) {
-    //                     if (
-    //                         email === findUser.email &&
-    //                         password === findUser.password
-    //                     ) {
-    //                         dispatch(setUser(findUser));
-    //                     } else {
-    //                         setFoundUser(true);
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }, [
-    //     loadingQuery,
-    //     fetchingQuery,
-    //     loginWithGoogle,
-    //     email,
-    //     password,
-    //     enteredEmail,
-    // ]);
-
-    // // if findUser error
-    // useEffect(() => {
-    //     if (errorQuery) {
-    //         setFoundUser(false);
-    //     }
-    // }, [errorQuery]);
-
-    // useEffect(() => {
-    //     if (loginState && userDetails !== undefined) {
-    //         navigate("/dashboard");
-    //     }
-    // }, [loginState, userDetails]);
+    useEffect(() => {
+        if (loginState && userDetails !== undefined) {
+            navigate("/dashboard");
+        }
+    }, [loginState, userDetails]);
 
     return (
         <>
@@ -282,7 +220,8 @@ export const Login = () => {
                                 {...register("email")}
                                 error={
                                     !!errors.email ||
-                                    (!loginWithGoogle && userDoesntExist || false)
+                                    (!loginWithGoogle && userDoesntExist) ||
+                                    false
                                 }
                                 helperText={
                                     errors.email?.message ||
@@ -367,10 +306,13 @@ export const Login = () => {
                     </CenteredContainer>
                 </Box>
             </CenteredPageContainer>
-            {loginSnackbar}
             <ErrorSnackbar
-                openErrorSnackBar={foundUser}
-                text={"Incorrect password!"}
+                openErrorSnackBar={foundUser || userDoesntExist || false}
+                text={
+                    (foundUser && "Incorrect password!") ||
+                    (userDoesntExist && "User doesn't exist!") ||
+                    ""
+                }
             />
         </>
     );
