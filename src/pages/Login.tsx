@@ -12,6 +12,8 @@ import FormControl from "@mui/material/FormControl";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import GoogleIcon from "@mui/icons-material/Google";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 import { Container, FormHelperText } from "@mui/material";
 
 // Google Auth
@@ -61,7 +63,7 @@ export const Login = () => {
 
     const [loginWithGoogle, setLoginWithGoogle] = useState(false);
 
-    const { loginUser } = useUser();
+    const { loginUser, loadingMutation } = useUser();
 
     const [foundUser, setFoundUser] = useState(false);
     const [userDoesntExist, setUserDoesntExist] = useState<boolean | null>(
@@ -314,6 +316,15 @@ export const Login = () => {
                     ""
                 }
             />
+            <Backdrop
+                sx={{
+                    color: "#fff",
+                    zIndex: (theme) => theme.zIndex.drawer + 1,
+                }}
+                open={loadingMutation}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
         </>
     );
 };
