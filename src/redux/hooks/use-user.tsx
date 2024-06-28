@@ -27,7 +27,7 @@ interface ErrorMessage {
 
 export const useUser = ({
     email = "",
-    password = "",
+    // password = "",
 }: { email?: string; password?: string } = {}) => {
     // for stackbar
     const [stackText, setStackText] = useState("");
