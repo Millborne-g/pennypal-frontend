@@ -69,11 +69,12 @@ type formType = {
 export const Signup = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const [userDetails, setUserDetails] = useState({});
+    const [userDetails, setUserDetails] = useState<any>();
     const [enteredEmail, setEnteredEmail] = useState("");
     const [signUpWithGoogle, setSignUpWithGoogle] = useState(false);
     const [emailAlreadyExist, setEmailAlreadyExist] = useState(false);
     const {
+        findUser,
         registerUser,
         successMutation,
         registerUserErrorMessage,
@@ -115,10 +116,11 @@ export const Signup = () => {
     };
 
     const sendUserDetails = async (details: object) => {
-        await registerUser(details);
+        let response = await registerUser(details);
+        setUserDetails(response);
     };
 
-    const signUp = (data: formType) => {
+    const signUp = async (data: formType) => {
         setSignUpWithGoogle(false);
         if (confirmPassword !== password) {
             setConfirmPasswordError(true);
@@ -131,8 +133,8 @@ export const Signup = () => {
                 lastName: data.lastName,
                 userImage: "",
             };
-            registerUser(newData);
-            setUserDetails(newData);
+            let response = await registerUser(newData);
+            setUserDetails(response);
         }
     };
 
@@ -168,7 +170,6 @@ export const Signup = () => {
                         userImage: data.picture,
                     };
                     setEnteredEmail(data.email);
-                    setUserDetails(newData);
                     sendUserDetails(newData);
                 })
                 .catch((error) => {
@@ -204,25 +205,21 @@ export const Signup = () => {
             console.log(code);
 
             if (code === 11000) {
-                // message = "Email already exist!";
-                // dispatch(setUser(userDetails));
-                if (signUpWithGoogle) {
-                    dispatch(setUser(userDetails));
+                if (signUpWithGoogle && findUser) {
+                    dispatch(setUser(findUser));
                 } else {
                     setEmailAlreadyExist(true);
                 }
             }
         }
-    }, [registerUserErrorMessage]);
-
-    // dispatch(logoutUser())
+    }, [registerUserErrorMessage, findUser]);
 
     // register new user
     useEffect(() => {
-        if (successMutation) {
+        if (successMutation && userDetails) {
             dispatch(setUser(userDetails));
         }
-    }, [successMutation]);
+    }, [successMutation, userDetails]);
 
     useEffect(() => {
         if (loginState) {

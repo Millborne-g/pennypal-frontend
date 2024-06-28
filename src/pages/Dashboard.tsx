@@ -50,6 +50,7 @@ const valueFormatter = (value: number) => {
 
 export const Dashboard = () => {
     const userDetails = useSelector((state: any) => state.user.user);
+    
     const months = [
         "January",
         "February",
