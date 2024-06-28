@@ -108,7 +108,7 @@ export const Message = () => {
     };
 
     useEffect(() => {
-        socket.on("receiveMessage", (data: any) => {
+        socket.on("receiveMessage", () => {
             refetchMessages();
         });
     }, [socket]);
@@ -187,7 +187,7 @@ export const Message = () => {
                                             }
                                             fullWidth
                                             onInputChange={(
-                                                event,
+                                                _,
                                                 newInputValue
                                             ) => {
                                                 setInputRecipient(
@@ -196,7 +196,7 @@ export const Message = () => {
                                             }}
                                             inputValue={inputRecipient}
                                             onChange={(
-                                                event: any,
+                                                _,
                                                 newValue: userData | null
                                             ) => {
                                                 if (newValue) {

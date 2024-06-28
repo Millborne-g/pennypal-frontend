@@ -14,7 +14,6 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import GoogleIcon from "@mui/icons-material/Google";
 import Grid from "@mui/material/Grid";
-import Link from "@mui/material/Link";
 
 // Google Auth
 import { useGoogleLogin } from "@react-oauth/google";
@@ -29,7 +28,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 // User
-import { setUser, logoutUser } from "../redux/reducers/userSlice";
+import { setUser } from "../redux/reducers/userSlice";
 
 // Components
 import { CenteredContainer } from "../components/containers/CenteredContainer";
@@ -93,7 +92,7 @@ export const Signup = () => {
         register,
         handleSubmit,
         formState: { errors },
-        reset,
+        // reset,
     } = useForm<formType>({
         resolver: yupResolver(schema),
     });

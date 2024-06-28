@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { useGetAllExpensesQuery, useGetExpensesByYearQuery, useGetExpensesByUserIdQuery, useAddExpenseMutation, useDeleteExpenseMutation } from "../reducers/api/expensesAPI";
-
-import { useSelector } from "react-redux/es/hooks/useSelector";
+import { useGetAllExpensesQuery, useGetExpensesByUserIdQuery, useAddExpenseMutation, useDeleteExpenseMutation } from "../reducers/api/expensesAPI";
 
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps, AlertColor } from '@mui/material/Alert';
@@ -21,10 +19,7 @@ export const useExpenses = ({userId = ""}: {userId?: string} = {}) => {
     const [openSuccessStack, setOpenSuccessStack] = useState(false);
     const [stackSeverity, setStackSeverity] = useState<AlertColor | undefined>('success');
 
-    const handleSuccessStackClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-        return;
-        }
+    const handleSuccessStackClose = () => {
         setOpenSuccessStack(false);
     };
 
@@ -165,6 +160,7 @@ export const useExpenses = ({userId = ""}: {userId?: string} = {}) => {
         deleteExpense,
         expensesSuccessMutation,
         expensesLoadingMutation,
+        expensesErrorMutation,
         SnackbarComponent: ( // Return the Snackbar component as part of the returned object
             <Snackbar open={openSuccessStack} autoHideDuration={3000} onClose={handleSuccessStackClose}>
                 <Alert onClose={handleSuccessStackClose} severity={stackSeverity} sx={{ width: '100%' }}>

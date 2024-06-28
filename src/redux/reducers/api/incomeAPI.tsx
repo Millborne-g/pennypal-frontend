@@ -57,7 +57,7 @@ export const incomeAPI = createApi({
             // invalidtate - means to refetch the code to make sure ma update ang list
             // invalidatesTags: ['users'] // para mu refresh tung naa sa persist
             // gina delete ra niya tung user sa katung query with 'List' ID
-            invalidatesTags: (result, error, idIncome) => {
+            invalidatesTags: (idIncome) => {
                 return [{ type: "income", idIncome }];
             },
         }),

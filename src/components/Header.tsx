@@ -26,7 +26,6 @@ import { logoutUser } from "../redux/reducers/userSlice";
 
 // Assets
 import logoWithText from "../assets/logoWithText.svg";
-import logo from "../assets/logo.svg";
 
 // redux
 import { useDispatch, useSelector } from "react-redux";

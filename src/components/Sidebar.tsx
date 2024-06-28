@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { NavLink, useLocation, useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { NavLink, useLocation} from 'react-router-dom';
 
 // MUI
 import Box from '@mui/material/Box';

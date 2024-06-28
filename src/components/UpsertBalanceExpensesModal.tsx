@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 // MUI imports
 import Box from "@mui/material/Box";

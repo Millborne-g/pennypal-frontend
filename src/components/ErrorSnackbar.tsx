@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 
@@ -14,11 +13,16 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 export const ErrorSnackbar = ({openErrorSnackBar, text}:{openErrorSnackBar: boolean, text: string}) => {
 
     const [open, setOpen] = useState(false);
-    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-        return;
-        }
+    // const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    //     if (reason === 'clickaway') {
+    //     return;
+    //     }
 
+    //     setOpen(false);
+    // };
+
+    const handleClose = (
+    ) => {
         setOpen(false);
     };
 

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { useGetAllIncomeQuery, useGetIncomeByYearQuery, useGetIncomeByUserIdQuery, useAddIncomeMutation, useDeleteIncomeMutation } from "../reducers/api/incomeAPI";
-
-import { useSelector } from "react-redux/es/hooks/useSelector";
+import { useGetAllIncomeQuery, useGetIncomeByUserIdQuery, useAddIncomeMutation, useDeleteIncomeMutation } from "../reducers/api/incomeAPI";
 
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps, AlertColor } from '@mui/material/Alert';
@@ -21,10 +19,7 @@ export const useIncome = ({userId = ""}: {userId?: string} = {}) => {
     const [stackText, setStackText] = useState('');
     const [openSuccessStack, setOpenSuccessStack] = useState(false);
     const [stackSeverity, setStackSeverity] = useState<AlertColor | undefined>('success');
-    const handleSuccessStackClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-        return;
-        }
+    const handleSuccessStackClose = () => {
         setOpenSuccessStack(false);
     };
 

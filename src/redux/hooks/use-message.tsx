@@ -20,10 +20,7 @@ export const useMessage = ({senderEmail = "", recipientEmail = "" }: {senderEmai
     const [stackText, setStackText] = useState('');
     const [openSuccessStack, setOpenSuccessStack] = useState(false);
     const [stackSeverity, setStackSeverity] = useState<AlertColor | undefined>('success');
-    const handleSuccessStackClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-        return;
-        }
+    const handleSuccessStackClose = () => {
         setOpenSuccessStack(false);
     };
 
@@ -53,7 +50,7 @@ export const useMessage = ({senderEmail = "", recipientEmail = "" }: {senderEmai
         }]= useAddMessageMutation();
 
     // query
-    const successQuery = usersMessages;
+    const successQuery = usersMessagesSuccess;
     const errorQuery = usersMessagesError;
     const loadingQuery = usersMessagesLoading;
     const fetchingQuery = usersMessagesFetching;

@@ -7,12 +7,6 @@ import {
     useLoginUserMutation,
 } from "../reducers/api/userAPI";
 
-// hooks
-import { setUser } from "../reducers/userSlice";
-
-// redux
-import { useDispatch } from "react-redux";
-
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps, AlertColor } from "@mui/material/Alert";
 
@@ -33,7 +27,7 @@ interface ErrorMessage {
 
 export const useUser = ({
     email = "",
-    password = "",
+    // password = "",
 }: { email?: string; password?: string } = {}) => {
     // for stackbar
     const [stackText, setStackText] = useState("");
@@ -41,13 +35,7 @@ export const useUser = ({
     const [stackSeverity, setStackSeverity] = useState<AlertColor | undefined>(
         "success"
     );
-    const handleSuccessStackClose = (
-        event?: React.SyntheticEvent | Event,
-        reason?: string
-    ) => {
-        if (reason === "clickaway") {
-            return;
-        }
+    const handleSuccessStackClose = () => {
         setOpenSuccessStack(false);
     };
 
@@ -91,8 +79,8 @@ export const useUser = ({
     const [
         loginUser,
         {
-            error: loginUserErrorMessage,
-            isError: loginUserError,
+            // error: loginUserErrorMessage,
+            // isError: loginUserError,
             isLoading: loginUserLoading,
             isSuccess: loginUserSuccess,
         },
