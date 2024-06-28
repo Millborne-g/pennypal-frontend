@@ -65,7 +65,7 @@ export const Dashboard = () => {
         "November",
         "December",
     ];
-
+    
     // const { allExpenses, allExpensesFetching, allExpensesLoading, allExpensesSuccess, addExpense, expensesLoadingMutation, SnackbarComponent: expensesSnackbar} = useExpenses();
     const {
         // allExpenses,
@@ -92,7 +92,7 @@ export const Dashboard = () => {
         incomeLoadingMutation,
         SnackbarComponent: incomeSnackbar,
     } = useIncome({
-        userId: userDetails._id.toString(),
+        userId: userDetails._id,
     });
 
     const [dataset, setDataset] = useState<exbalDataType[]>([

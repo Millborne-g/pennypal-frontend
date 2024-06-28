@@ -217,7 +217,9 @@ export const Signup = () => {
     // register new user
     useEffect(() => {
         if (successMutation && userDetails) {
-            dispatch(setUser(userDetails));
+            if (!userDetails.error) {
+                dispatch(setUser(userDetails.data));
+            }
         }
     }, [successMutation, userDetails]);
 
