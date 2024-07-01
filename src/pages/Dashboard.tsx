@@ -294,449 +294,448 @@ export const Dashboard = () => {
     }, [windowWidth]);
 
     return (
-        <>test</>
-        // <>
-        //     <Box>
-        //         <CssBaseline />
-        //         <PageContainer>
-        //             <SpacedContainer>
-        //                 <Typography fontSize={30} fontWeight={700} gutterBottom>
-        //                     Dashboard
-        //                 </Typography>
-        //                 {/* time range */}
-        //                 <Box>
-        //                     <FormControl fullWidth>
-        //                         <InputLabel>Year</InputLabel>
-        //                         <Select
-        //                             value={currentYear}
-        //                             label="Year"
-        //                             onChange={handleChange}
-        //                             sx={{
-        //                                 bgcolor: "#FFF",
-        //                             }}
-        //                         >
-        //                             {yearList.map((year) => (
-        //                                 <MenuItem
-        //                                     key={year}
-        //                                     value={year.toString()}
-        //                                 >
-        //                                     {year}
-        //                                 </MenuItem>
-        //                             ))}
-        //                         </Select>
-        //                     </FormControl>
-        //                 </Box>
-        //             </SpacedContainer>
-        //             <Box sx={{ mb: "15px" }}>
-        //                 <Typography>
-        //                     Welcome, {userDetails.firstName}! We're
-        //                     thrilled to have you here.👋
-        //                 </Typography>
-        //             </Box>
-        //             <Divider />
+        <>
+            <Box>
+                <CssBaseline />
+                <PageContainer>
+                    <SpacedContainer>
+                        <Typography fontSize={30} fontWeight={700} gutterBottom>
+                            Dashboard
+                        </Typography>
+                        {/* time range */}
+                        <Box>
+                            <FormControl fullWidth>
+                                <InputLabel>Year</InputLabel>
+                                <Select
+                                    value={currentYear}
+                                    label="Year"
+                                    onChange={handleChange}
+                                    sx={{
+                                        bgcolor: "#FFF",
+                                    }}
+                                >
+                                    {yearList.map((year) => (
+                                        <MenuItem
+                                            key={year}
+                                            value={year.toString()}
+                                        >
+                                            {year}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Box>
+                    </SpacedContainer>
+                    <Box sx={{ mb: "15px" }}>
+                        <Typography>
+                            Welcome, {userDetails.firstName}! We're
+                            thrilled to have you here.👋
+                        </Typography>
+                    </Box>
+                    <Divider />
 
-        //             {/* numbers */}
-        //             <br />
-        //             <Box sx={{ mb: 1 }}>
-        //                 <Grid container spacing={1}>
-        //                     {/* Total Income */}
-        //                     <Grid sx={{ width: "100%" }} item md={4} sm={6}>
-        //                         <Box
-        //                             sx={{
-        //                                 bgcolor: "#FFF",
-        //                                 p: "20px",
-        //                                 borderRadius: "10px",
-        //                                 border: "1px solid #DFDFDF",
-        //                                 transition: "0.2s ease-in-out",
-        //                                 cursor: "pointer",
-        //                                 display: "flex",
-        //                                 alignItems: "center",
-        //                                 justifyContent: "space-between",
-        //                                 py: 4,
-        //                                 "&: hover": {
-        //                                     boxShadow:
-        //                                         "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-        //                                 },
-        //                             }}
-        //                             onClick={() => {
-        //                                 setOpenModel(true);
-        //                                 setAddBalExText("Income");
-        //                             }}
-        //                         >
-        //                             <Box>
-        //                                 <Typography
-        //                                     sx={{
-        //                                         fontWeight: 400,
-        //                                         color: "#545454",
-        //                                     }}
-        //                                 >
-        //                                     Total Income
-        //                                 </Typography>
-        //                                 <Box
-        //                                     sx={{
-        //                                         display: "flex",
-        //                                         alignItems: "center",
-        //                                         gap: 0.5,
-        //                                     }}
-        //                                 >
-        //                                     <Typography
-        //                                         sx={{
-        //                                             fontSize: "35px",
-        //                                             fontWeight: "600",
-        //                                             overflow: "hidden",
-        //                                             textOverflow: "ellipsis",
-        //                                             whiteSpace: "nowrap",
-        //                                         }}
-        //                                     >
-        //                                         {new Intl.NumberFormat(
-        //                                             "en-PH",
-        //                                             {
-        //                                                 style: "currency",
-        //                                                 currency: "PHP",
-        //                                             }
-        //                                         )
-        //                                             .format(
-        //                                                 Math.floor(totalIncome)
-        //                                             )
-        //                                             .replace(/\.00$/, "")}
-        //                                     </Typography>
-        //                                     <Box
-        //                                         sx={{
-        //                                             bgcolor: "#0066FF",
-        //                                             borderRadius: "100%",
-        //                                         }}
-        //                                     >
-        //                                         <IconButton size="small">
-        //                                             <AddIcon
-        //                                                 sx={{
-        //                                                     color: "#FFFFFF",
-        //                                                     fontSize: "15px",
-        //                                                 }}
-        //                                             />
-        //                                         </IconButton>
-        //                                     </Box>
-        //                                 </Box>
-        //                             </Box>
-        //                             <Box>
-        //                                 <Box
-        //                                     sx={{
-        //                                         bgcolor: "#53B16B",
-        //                                         display: "flex",
-        //                                         alignItems: "center",
-        //                                         justifyContent: "center",
-        //                                         borderRadius: "100%",
-        //                                         height: "60px",
-        //                                         width: "60px",
-        //                                     }}
-        //                                 >
-        //                                     <WalletIcon
-        //                                         sx={{
-        //                                             fontSize: "35px",
-        //                                             color: "#ffffff",
-        //                                         }}
-        //                                     />
-        //                                 </Box>
-        //                             </Box>
-        //                         </Box>
-        //                     </Grid>
+                    {/* numbers */}
+                    <br />
+                    <Box sx={{ mb: 1 }}>
+                        <Grid container spacing={1}>
+                            {/* Total Income */}
+                            <Grid sx={{ width: "100%" }} item md={4} sm={6}>
+                                <Box
+                                    sx={{
+                                        bgcolor: "#FFF",
+                                        p: "20px",
+                                        borderRadius: "10px",
+                                        border: "1px solid #DFDFDF",
+                                        transition: "0.2s ease-in-out",
+                                        cursor: "pointer",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        py: 4,
+                                        "&: hover": {
+                                            boxShadow:
+                                                "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+                                        },
+                                    }}
+                                    onClick={() => {
+                                        setOpenModel(true);
+                                        setAddBalExText("Income");
+                                    }}
+                                >
+                                    <Box>
+                                        <Typography
+                                            sx={{
+                                                fontWeight: 400,
+                                                color: "#545454",
+                                            }}
+                                        >
+                                            Total Income
+                                        </Typography>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: 0.5,
+                                            }}
+                                        >
+                                            <Typography
+                                                sx={{
+                                                    fontSize: "35px",
+                                                    fontWeight: "600",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                    whiteSpace: "nowrap",
+                                                }}
+                                            >
+                                                {new Intl.NumberFormat(
+                                                    "en-PH",
+                                                    {
+                                                        style: "currency",
+                                                        currency: "PHP",
+                                                    }
+                                                )
+                                                    .format(
+                                                        Math.floor(totalIncome)
+                                                    )
+                                                    .replace(/\.00$/, "")}
+                                            </Typography>
+                                            <Box
+                                                sx={{
+                                                    bgcolor: "#0066FF",
+                                                    borderRadius: "100%",
+                                                }}
+                                            >
+                                                <IconButton size="small">
+                                                    <AddIcon
+                                                        sx={{
+                                                            color: "#FFFFFF",
+                                                            fontSize: "15px",
+                                                        }}
+                                                    />
+                                                </IconButton>
+                                            </Box>
+                                        </Box>
+                                    </Box>
+                                    <Box>
+                                        <Box
+                                            sx={{
+                                                bgcolor: "#53B16B",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                borderRadius: "100%",
+                                                height: "60px",
+                                                width: "60px",
+                                            }}
+                                        >
+                                            <WalletIcon
+                                                sx={{
+                                                    fontSize: "35px",
+                                                    color: "#ffffff",
+                                                }}
+                                            />
+                                        </Box>
+                                    </Box>
+                                </Box>
+                            </Grid>
 
-        //                     {/* Total Expenses */}
-        //                     <Grid sx={{ width: "100%" }} item md={4} sm={6}>
-        //                         <Box
-        //                             sx={{
-        //                                 bgcolor: "#FFF",
-        //                                 p: "20px",
-        //                                 borderRadius: "10px",
-        //                                 border: "1px solid #DFDFDF",
-        //                                 transition: "0.2s ease-in-out",
-        //                                 cursor: "pointer",
-        //                                 display: "flex",
-        //                                 alignItems: "center",
-        //                                 justifyContent: "space-between",
-        //                                 py: 4,
-        //                                 "&: hover": {
-        //                                     boxShadow:
-        //                                         "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-        //                                 },
-        //                             }}
-        //                             onClick={() => {
-        //                                 setOpenModel(true);
-        //                                 setAddBalExText("Expense");
-        //                             }}
-        //                         >
-        //                             <Box>
-        //                                 <Typography>Total Expenses</Typography>
-        //                                 <Box
-        //                                     sx={{
-        //                                         display: "flex",
-        //                                         alignItems: "center",
-        //                                         gap: 0.5,
-        //                                     }}
-        //                                 >
-        //                                     <Typography
-        //                                         sx={{
-        //                                             fontSize: "35px",
-        //                                             fontWeight: "600",
-        //                                             overflow: "hidden",
-        //                                             textOverflow: "ellipsis",
-        //                                             whiteSpace: "nowrap",
-        //                                         }}
-        //                                     >
-        //                                         {new Intl.NumberFormat(
-        //                                             "en-PH",
-        //                                             {
-        //                                                 style: "currency",
-        //                                                 currency: "PHP",
-        //                                             }
-        //                                         )
-        //                                             .format(
-        //                                                 Math.floor(
-        //                                                     totalExpenses
-        //                                                 )
-        //                                             )
-        //                                             .replace(/\.00$/, "")}
-        //                                     </Typography>
-        //                                     <Box
-        //                                         sx={{
-        //                                             bgcolor: "#0066FF",
-        //                                             borderRadius: "100%",
-        //                                         }}
-        //                                     >
-        //                                         <IconButton size="small">
-        //                                             <AddIcon
-        //                                                 sx={{
-        //                                                     color: "#FFFFFF",
-        //                                                     fontSize: "15px",
-        //                                                 }}
-        //                                             />
-        //                                         </IconButton>
-        //                                     </Box>
-        //                                 </Box>
-        //                             </Box>
-        //                             <Box>
-        //                                 <Box
-        //                                     sx={{
-        //                                         bgcolor: "#FF6668",
-        //                                         display: "flex",
-        //                                         alignItems: "center",
-        //                                         justifyContent: "center",
-        //                                         borderRadius: "100%",
-        //                                         height: "60px",
-        //                                         width: "60px",
-        //                                     }}
-        //                                 >
-        //                                     <PaidIcon
-        //                                         sx={{
-        //                                             fontSize: "35px",
-        //                                             color: "#ffffff",
-        //                                         }}
-        //                                     />
-        //                                 </Box>
-        //                             </Box>
-        //                         </Box>
-        //                     </Grid>
+                            {/* Total Expenses */}
+                            <Grid sx={{ width: "100%" }} item md={4} sm={6}>
+                                <Box
+                                    sx={{
+                                        bgcolor: "#FFF",
+                                        p: "20px",
+                                        borderRadius: "10px",
+                                        border: "1px solid #DFDFDF",
+                                        transition: "0.2s ease-in-out",
+                                        cursor: "pointer",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        py: 4,
+                                        "&: hover": {
+                                            boxShadow:
+                                                "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+                                        },
+                                    }}
+                                    onClick={() => {
+                                        setOpenModel(true);
+                                        setAddBalExText("Expense");
+                                    }}
+                                >
+                                    <Box>
+                                        <Typography>Total Expenses</Typography>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: 0.5,
+                                            }}
+                                        >
+                                            <Typography
+                                                sx={{
+                                                    fontSize: "35px",
+                                                    fontWeight: "600",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                    whiteSpace: "nowrap",
+                                                }}
+                                            >
+                                                {new Intl.NumberFormat(
+                                                    "en-PH",
+                                                    {
+                                                        style: "currency",
+                                                        currency: "PHP",
+                                                    }
+                                                )
+                                                    .format(
+                                                        Math.floor(
+                                                            totalExpenses
+                                                        )
+                                                    )
+                                                    .replace(/\.00$/, "")}
+                                            </Typography>
+                                            <Box
+                                                sx={{
+                                                    bgcolor: "#0066FF",
+                                                    borderRadius: "100%",
+                                                }}
+                                            >
+                                                <IconButton size="small">
+                                                    <AddIcon
+                                                        sx={{
+                                                            color: "#FFFFFF",
+                                                            fontSize: "15px",
+                                                        }}
+                                                    />
+                                                </IconButton>
+                                            </Box>
+                                        </Box>
+                                    </Box>
+                                    <Box>
+                                        <Box
+                                            sx={{
+                                                bgcolor: "#FF6668",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                borderRadius: "100%",
+                                                height: "60px",
+                                                width: "60px",
+                                            }}
+                                        >
+                                            <PaidIcon
+                                                sx={{
+                                                    fontSize: "35px",
+                                                    color: "#ffffff",
+                                                }}
+                                            />
+                                        </Box>
+                                    </Box>
+                                </Box>
+                            </Grid>
 
-        //                     {/* Saving */}
-        //                     <Grid sx={{ width: "100%" }} item md={4} sm={12}>
-        //                         <Box
-        //                             sx={{
-        //                                 bgcolor: "#FFF",
-        //                                 p: "20px",
-        //                                 borderRadius: "10px",
-        //                                 border: "1px solid #DFDFDF",
-        //                                 transition: "0.2s ease-in-out",
-        //                                 cursor: "pointer",
-        //                                 display: "flex",
-        //                                 alignItems: "center",
-        //                                 justifyContent: "space-between",
-        //                                 py: 4,
-        //                                 "&: hover": {
-        //                                     boxShadow:
-        //                                         "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-        //                                 },
-        //                             }}
-        //                         >
-        //                             <Box>
-        //                                 <Typography
-        //                                     sx={{
-        //                                         fontWeight: 400,
-        //                                         color: "#545454",
-        //                                     }}
-        //                                 >
-        //                                     Savings
-        //                                 </Typography>
-        //                                 <Box
-        //                                     sx={{
-        //                                         display: "flex",
-        //                                         alignItems: "center",
-        //                                         gap: 0.5,
-        //                                     }}
-        //                                 >
-        //                                     <Typography
-        //                                         sx={{
-        //                                             fontSize: "35px",
-        //                                             fontWeight: "600",
-        //                                             overflow: "hidden",
-        //                                             textOverflow: "ellipsis",
-        //                                             whiteSpace: "nowrap",
-        //                                             color:
-        //                                                 totalIncome -
-        //                                                     totalExpenses <
-        //                                                 0
-        //                                                     ? "#FF6668"
-        //                                                     : "",
-        //                                         }}
-        //                                     >
-        //                                         {new Intl.NumberFormat(
-        //                                             "en-PH",
-        //                                             {
-        //                                                 style: "currency",
-        //                                                 currency: "PHP",
-        //                                             }
-        //                                         )
-        //                                             .format(
-        //                                                 totalIncome -
-        //                                                     totalExpenses
-        //                                             )
-        //                                             .replace(/\.00$/, "")}
-        //                                     </Typography>
-        //                                 </Box>
-        //                             </Box>
-        //                             <Box>
-        //                                 <Box
-        //                                     sx={{
-        //                                         bgcolor:
-        //                                             theme.palette.primary.light,
-        //                                         display: "flex",
-        //                                         alignItems: "center",
-        //                                         justifyContent: "center",
-        //                                         borderRadius: "100%",
-        //                                         height: "60px",
-        //                                         width: "60px",
-        //                                     }}
-        //                                 >
-        //                                     <SavingsIcon
-        //                                         sx={{
-        //                                             fontSize: "35px",
-        //                                             color: "#ffffff",
-        //                                         }}
-        //                                     />
-        //                                 </Box>
-        //                             </Box>
-        //                         </Box>
-        //                     </Grid>
-        //                 </Grid>
-        //             </Box>
+                            {/* Saving */}
+                            <Grid sx={{ width: "100%" }} item md={4} sm={12}>
+                                <Box
+                                    sx={{
+                                        bgcolor: "#FFF",
+                                        p: "20px",
+                                        borderRadius: "10px",
+                                        border: "1px solid #DFDFDF",
+                                        transition: "0.2s ease-in-out",
+                                        cursor: "pointer",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        py: 4,
+                                        "&: hover": {
+                                            boxShadow:
+                                                "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+                                        },
+                                    }}
+                                >
+                                    <Box>
+                                        <Typography
+                                            sx={{
+                                                fontWeight: 400,
+                                                color: "#545454",
+                                            }}
+                                        >
+                                            Savings
+                                        </Typography>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: 0.5,
+                                            }}
+                                        >
+                                            <Typography
+                                                sx={{
+                                                    fontSize: "35px",
+                                                    fontWeight: "600",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                    whiteSpace: "nowrap",
+                                                    color:
+                                                        totalIncome -
+                                                            totalExpenses <
+                                                        0
+                                                            ? "#FF6668"
+                                                            : "",
+                                                }}
+                                            >
+                                                {new Intl.NumberFormat(
+                                                    "en-PH",
+                                                    {
+                                                        style: "currency",
+                                                        currency: "PHP",
+                                                    }
+                                                )
+                                                    .format(
+                                                        totalIncome -
+                                                            totalExpenses
+                                                    )
+                                                    .replace(/\.00$/, "")}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                    <Box>
+                                        <Box
+                                            sx={{
+                                                bgcolor:
+                                                    theme.palette.primary.light,
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                borderRadius: "100%",
+                                                height: "60px",
+                                                width: "60px",
+                                            }}
+                                        >
+                                            <SavingsIcon
+                                                sx={{
+                                                    fontSize: "35px",
+                                                    color: "#ffffff",
+                                                }}
+                                            />
+                                        </Box>
+                                    </Box>
+                                </Box>
+                            </Grid>
+                        </Grid>
+                    </Box>
 
-        //             {/* Chart */}
-        //             <Box
-        //                 sx={{
-        //                     bgcolor: "#FFF",
-        //                     p: "20px",
-        //                     borderRadius: "10px",
-        //                     border: "1px solid #DFDFDF",
-        //                 }}
-        //             >
-        //                 <Box
-        //                     sx={{
-        //                         display: "flex",
-        //                         justifyContent: "space-between",
-        //                         alignItems: "center",
-        //                     }}
-        //                 >
-        //                     <Typography fontWeight={600}>
-        //                         Income - Expense
-        //                     </Typography>
-        //                     <Box
-        //                         sx={{
-        //                             border: "1px solid #DFDFDF",
-        //                             borderRadius: "5px",
-        //                             display: "flex",
-        //                             justifyContent: "center",
-        //                             alignItems: "center",
-        //                         }}
-        //                     >
-        //                         <IconButton
-        //                             disabled={currentMonth === 0}
-        //                             onClick={() => {
-        //                                 setCurrentMonth(
-        //                                     (prevMon: number) => prevMon - 1
-        //                                 );
-        //                             }}
-        //                         >
-        //                             <KeyboardArrowLeftIcon />
-        //                         </IconButton>
-        //                         <Box sx={{ px: 1 }}>{months[currentMonth]}</Box>
-        //                         <IconButton
-        //                             disabled={currentMonth === 11}
-        //                             onClick={() => {
-        //                                 setCurrentMonth(
-        //                                     (prevMon: number) => prevMon + 1
-        //                                 );
-        //                             }}
-        //                         >
-        //                             <KeyboardArrowRightIcon />
-        //                         </IconButton>
-        //                     </Box>
-        //                 </Box>
-        //                 {dataset && (
-        //                     <BarChart
-        //                         dataset={datasetMonthly}
-        //                         xAxis={[
-        //                             {
-        //                                 scaleType: "band",
-        //                                 dataKey: "month",
-        //                             },
-        //                         ]}
-        //                         series={[
-        //                             {
-        //                                 dataKey: "income",
-        //                                 label: "Income",
-        //                                 valueFormatter,
-        //                             },
-        //                             {
-        //                                 dataKey: "expenses",
-        //                                 label: "Expenses",
-        //                                 valueFormatter,
-        //                             },
-        //                         ]}
-        //                         height={400}
-        //                         sx={{
-        //                             width: "100%",
-        //                         }}
-        //                         colors={["#53B16B", "#FF6668"]}
-        //                     />
-        //                 )}
-        //             </Box>
-        //         </PageContainer>
-        //     </Box>
+                    {/* Chart */}
+                    <Box
+                        sx={{
+                            bgcolor: "#FFF",
+                            p: "20px",
+                            borderRadius: "10px",
+                            border: "1px solid #DFDFDF",
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                            }}
+                        >
+                            <Typography fontWeight={600}>
+                                Income - Expense
+                            </Typography>
+                            <Box
+                                sx={{
+                                    border: "1px solid #DFDFDF",
+                                    borderRadius: "5px",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <IconButton
+                                    disabled={currentMonth === 0}
+                                    onClick={() => {
+                                        setCurrentMonth(
+                                            (prevMon: number) => prevMon - 1
+                                        );
+                                    }}
+                                >
+                                    <KeyboardArrowLeftIcon />
+                                </IconButton>
+                                <Box sx={{ px: 1 }}>{months[currentMonth]}</Box>
+                                <IconButton
+                                    disabled={currentMonth === 11}
+                                    onClick={() => {
+                                        setCurrentMonth(
+                                            (prevMon: number) => prevMon + 1
+                                        );
+                                    }}
+                                >
+                                    <KeyboardArrowRightIcon />
+                                </IconButton>
+                            </Box>
+                        </Box>
+                        {dataset && (
+                            <BarChart
+                                dataset={datasetMonthly}
+                                xAxis={[
+                                    {
+                                        scaleType: "band",
+                                        dataKey: "month",
+                                    },
+                                ]}
+                                series={[
+                                    {
+                                        dataKey: "income",
+                                        label: "Income",
+                                        valueFormatter,
+                                    },
+                                    {
+                                        dataKey: "expenses",
+                                        label: "Expenses",
+                                        valueFormatter,
+                                    },
+                                ]}
+                                height={400}
+                                sx={{
+                                    width: "100%",
+                                }}
+                                colors={["#53B16B", "#FF6668"]}
+                            />
+                        )}
+                    </Box>
+                </PageContainer>
+            </Box>
 
-        //     {/* Modals */}
-        //     {openModal && (
-        //         <UpsertBalanceExpensesModal
-        //             setOpenModal={setOpenModel}
-        //             addBalExText={addBalExText}
-        //             addFunction={
-        //                 addBalExText === "Expense" ? addExpense : addIncome
-        //             }
-        //             refetch={
-        //                 addBalExText === "Expense"
-        //                     ? refetchUsersExpenses
-        //                     : refetchUsersIncomes
-        //             }
-        //         />
-        //     )}
+            {/* Modals */}
+            {openModal && (
+                <UpsertBalanceExpensesModal
+                    setOpenModal={setOpenModel}
+                    addBalExText={addBalExText}
+                    addFunction={
+                        addBalExText === "Expense" ? addExpense : addIncome
+                    }
+                    refetch={
+                        addBalExText === "Expense"
+                            ? refetchUsersExpenses
+                            : refetchUsersIncomes
+                    }
+                />
+            )}
 
-        //     {/* expenses Snackbar */}
-        //     {expensesSnackbar}
+            {/* expenses Snackbar */}
+            {expensesSnackbar}
 
-        //     {/* income Snackbar */}
-        //     {incomeSnackbar}
+            {/* income Snackbar */}
+            {incomeSnackbar}
 
-        //     {/* Loading */}
-        //     {((expensesLoadingQuery && incomeLoadingQuery) ||
-        //         expensesLoadingMutation ||
-        //         incomeLoadingMutation) && <Loading />}
-        // </>
+            {/* Loading */}
+            {((expensesLoadingQuery && incomeLoadingQuery) ||
+                expensesLoadingMutation ||
+                incomeLoadingMutation) && <Loading />}
+        </>
     );
 };
