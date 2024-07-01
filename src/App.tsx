@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import "./App.css";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import {
+    BrowserRouter, Route, Routes,
+    // Navigate
+} from "react-router-dom";
 
 // MUI imports
 // import { createTheme } from '@mui/material/styles';
