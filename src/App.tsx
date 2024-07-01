@@ -1,6 +1,11 @@
 import { useEffect } from "react";
 import "./App.css";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import {
+    BrowserRouter,
+    Route,
+    Routes,
+    // Navigate
+} from "react-router-dom";
 
 // MUI imports
 // import { createTheme } from '@mui/material/styles';
@@ -8,11 +13,11 @@ import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 // Pages
 import { Landing } from "./pages/Landing";
 import { Login } from "./pages/Login";
-import { Signup } from "./pages/Signup";
+// import { Signup } from "./pages/Signup";
 import { Dashboard } from "./pages/Dashboard";
-import { Expenses } from "./pages/Expenses";
-import { Income } from "./pages/Income";
-import { Message } from "./pages/Message";
+// import { Expenses } from "./pages/Expenses";
+// import { Income } from "./pages/Income";
+// import { Message } from "./pages/Message";
 
 // components
 import { Sidebar } from "./components/Sidebar";
@@ -23,6 +28,9 @@ import { useSelector } from "react-redux";
 function App() {
     const loginState = useSelector((state: any) => state.user.login);
     const currentURL = window.location.pathname;
+    const userDetails = useSelector((state: any) => state.user.user);
+
+    console.log(loginState, userDetails);
 
     // const lightTheme = createTheme({
     //   palette: {
@@ -66,6 +74,8 @@ function App() {
                         <Sidebar />
                     </>
                 )}
+                {/** 
+                 
                 <Routes>
                     <Route
                         index
@@ -125,6 +135,12 @@ function App() {
                             loginState ? <Message /> : <Navigate to="/login" />
                         }
                     />
+                </Routes>
+                */}
+                <Routes>
+                    <Route index element={<Landing />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
                 </Routes>
             </BrowserRouter>
         </>
