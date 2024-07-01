@@ -35,6 +35,7 @@ import { useNavigate } from "react-router-dom";
 
 export const Header = () => {
     const dispatch = useDispatch();
+    dispatch(logoutUser());
     const navigate = useNavigate();
     const userDetails = useSelector((state: any) => state.user.user);
     const userLogin = useSelector((state: any) => state.user.login);
@@ -187,14 +188,16 @@ export const Header = () => {
                                         />
                                     }
                                 >
-                                        <Typography sx={{
+                                    <Typography
+                                        sx={{
                                             display: {
                                                 sm: "block",
-                                                xs: "none"
-                                            }
-                                        }}>
-                                            {userDetails.fullName}
-                                        </Typography>
+                                                xs: "none",
+                                            },
+                                        }}
+                                    >
+                                        {userDetails.fullName}
+                                    </Typography>
                                 </Button>
                                 <Menu
                                     anchorEl={anchorEl}
