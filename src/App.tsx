@@ -11,8 +11,8 @@ import {
 // import { createTheme } from '@mui/material/styles';
 
 // Pages
-import { Landing } from "./pages/Landing";
-import { Login } from "./pages/Login";
+// import { Landing } from "./pages/Landing";
+// import { Login } from "./pages/Login";
 // import { Signup } from "./pages/Signup";
 import { Dashboard } from "./pages/Dashboard";
 // import { Expenses } from "./pages/Expenses";
