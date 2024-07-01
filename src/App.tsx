@@ -22,7 +22,11 @@ import { useSelector } from "react-redux";
 
 function App() {
     const loginState = useSelector((state: any) => state.user.login);
+    const userDetails = useSelector((state: any) => state.user.user);
     const currentURL = window.location.pathname;
+
+    console.log(userDetails);
+    
 
     // const lightTheme = createTheme({
     //   palette: {
@@ -71,7 +75,7 @@ function App() {
                         index
                         element={
                             loginState ? (
-                                <Navigate to="/message" />
+                                <Navigate to="/dashboard" />
                             ) : (
                                 <Landing />
                             )
