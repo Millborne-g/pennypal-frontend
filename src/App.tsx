@@ -1,18 +1,21 @@
 import { useEffect } from "react";
 import "./App.css";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import {
+    BrowserRouter, Route, Routes,
+    // Navigate
+} from "react-router-dom";
 
 // MUI imports
 // import { createTheme } from '@mui/material/styles';
 
 // Pages
-import { Landing } from "./pages/Landing";
-import { Login } from "./pages/Login";
-import { Signup } from "./pages/Signup";
+// import { Landing } from "./pages/Landing";
+// import { Login } from "./pages/Login";
+// import { Signup } from "./pages/Signup";
 import { Dashboard } from "./pages/Dashboard";
-import { Expenses } from "./pages/Expenses";
-import { Income } from "./pages/Income";
-import { Message } from "./pages/Message";
+// import { Expenses } from "./pages/Expenses";
+// import { Income } from "./pages/Income";
+// import { Message } from "./pages/Message";
 
 // components
 import { Sidebar } from "./components/Sidebar";
