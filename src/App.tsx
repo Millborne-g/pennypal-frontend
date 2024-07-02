@@ -67,7 +67,7 @@ function App() {
                     </>
                 )}
                 <Routes>
-                    <Route
+                    {/* <Route
                         index
                         element={
                             loginState ? (
@@ -124,7 +124,8 @@ function App() {
                         element={
                             loginState ? <Message /> : <Navigate to="/login" />
                         }
-                    />
+                    /> */}
+                    <Route index element={<Dashboard />} />
                 </Routes>
             </BrowserRouter>
         </>
