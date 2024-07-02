@@ -34,6 +34,7 @@ import { setUser } from "../redux/reducers/userSlice";
 import { CenteredContainer } from "../components/containers/CenteredContainer";
 import { CenteredPageContainer } from "../components/containers/CenteredPageContainer";
 import { FormHelperText } from "@mui/material";
+import { Loading } from "../components/Loading";
 
 // Assets
 import logoWithText from "../assets/logoWithText.svg";
@@ -79,6 +80,7 @@ export const Signup = () => {
         successMutation,
         registerUserErrorMessage,
         SnackbarComponent: registerSnackbar,
+        loadingMutation,
     } = useUser({ email: enteredEmail });
     const loginState = useSelector((state: any) => state.user.login);
 
@@ -213,7 +215,7 @@ export const Signup = () => {
             }
         }
     }, [registerUserErrorMessage, findUser]);
-
+    
     // register new user
     useEffect(() => {
         if (successMutation && userDetails) {
@@ -435,6 +437,7 @@ export const Signup = () => {
                 </Box>
             </CenteredPageContainer>
             {registerSnackbar}
+            {loadingMutation && <Loading />}
         </>
     );
 };

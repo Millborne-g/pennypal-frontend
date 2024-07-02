@@ -12,8 +12,6 @@ import FormControl from "@mui/material/FormControl";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import GoogleIcon from "@mui/icons-material/Google";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
 import { Container, FormHelperText } from "@mui/material";
 
 // Google Auth
@@ -35,6 +33,7 @@ import { useUser } from "../redux/hooks/use-user";
 import { CenteredPageContainer } from "../components/containers/CenteredPageContainer";
 import { CenteredContainer } from "../components/containers/CenteredContainer";
 import { ErrorSnackbar } from "../components/ErrorSnackbar";
+import { Loading } from "../components/Loading";
 
 // Assets
 import logoWithText from "../assets/logoWithText.svg";
@@ -316,15 +315,8 @@ export const Login = () => {
                     ""
                 }
             />
-            <Backdrop
-                sx={{
-                    color: "#fff",
-                    zIndex: (theme) => theme.zIndex.drawer + 1,
-                }}
-                open={loadingMutation}
-            >
-                <CircularProgress color="inherit" />
-            </Backdrop>
+
+            {loadingMutation && <Loading />}
         </>
     );
 };
