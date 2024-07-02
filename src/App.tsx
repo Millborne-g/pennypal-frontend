@@ -1,9 +1,6 @@
 import { useEffect } from "react";
 import "./App.css";
-import {
-    BrowserRouter, Route, Routes,
-    // Navigate
-} from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 
 // MUI imports
 // import { createTheme } from '@mui/material/styles';
@@ -11,11 +8,11 @@ import {
 // Pages
 import { Landing } from "./pages/Landing";
 import { Login } from "./pages/Login";
-// import { Signup } from "./pages/Signup";
-// import { Dashboard } from "./pages/Dashboard";
-// import { Expenses } from "./pages/Expenses";
-// import { Income } from "./pages/Income";
-// import { Message } from "./pages/Message";
+import { Signup } from "./pages/Signup";
+import { Dashboard } from "./pages/Dashboard";
+import { Expenses } from "./pages/Expenses";
+import { Income } from "./pages/Income";
+import { Message } from "./pages/Message";
 
 // components
 import { Sidebar } from "./components/Sidebar";
@@ -72,69 +69,62 @@ function App() {
                 <Routes>
                     <Route
                         index
-                        // element={
-                        //     loginState ? (
-                        //         <Navigate to="/dashboard" />
-                        //     ) : (
-                        //         <Landing />
-                        //     )
-                        // }
-                        element={<Landing />}
+                        element={
+                            loginState ? (
+                                <Navigate to="/dashboard" />
+                            ) : (
+                                <Landing />
+                            )
+                        }
                     />
                     <Route
                         path="/login"
-                        // element={
-                        //     loginState ? (
-                        //         <Navigate to="/dashboard" />
-                        //     ) : (
-                        //         <Login />
-                        //     )
-                        // }
-                        element={<Login />}
+                        element={
+                            loginState ? (
+                                <Navigate to="/dashboard" />
+                            ) : (
+                                <Login />
+                            )
+                        }
                     />
-                    {/* <Route
+                    <Route
                         path="/signup"
-                        // element={
-                        //     loginState ? (
-                        //         <Navigate to="/dashboard" />
-                        //     ) : (
-                        //         <Signup />
-                        //     )
-                        // }
-                        element={<Signup />}
+                        element={
+                            loginState ? (
+                                <Navigate to="/dashboard" />
+                            ) : (
+                                <Signup />
+                            )
+                        }
                     />
                     <Route
                         path="/dashboard"
-                        // element={
-                        //     loginState ? (
-                        //         <Dashboard />
-                        //     ) : (
-                        //         <Navigate to="/login" />
-                        //     )
-                        // }
-                        element={<Dashboard />}
+                        element={
+                            loginState ? (
+                                <Dashboard />
+                            ) : (
+                                <Navigate to="/login" />
+                            )
+                        }
                     />
                     <Route
                         path="/expenses"
-                        // element={
-                        //     loginState ? <Expenses /> : <Navigate to="/login" />
-                        // }
-                        element={<Expenses />}
+                        element={
+                            loginState ? <Expenses /> : <Navigate to="/login" />
+                        }
                     />
                     <Route
                         path="/income"
-                        // element={
-                        //     loginState ? <Income /> : <Navigate to="/login" />
-                        // }
-                        element={<Income />}
+                        element={
+                            loginState ? <Income /> : <Navigate to="/login" />
+                        }
                     />
                     <Route
                         path="/message"
-                        // element={
-                        //     loginState ? <Message /> : <Navigate to="/login" />
-                        // }
-                        element={<Message />}
-                    /> */}
+                        element={
+                            loginState ? <Message /> : <Navigate to="/login" />
+                        }
+                    />
                 </Routes>
             </BrowserRouter>
         </>
