@@ -11,11 +11,11 @@ import {
 // Pages
 import { Landing } from "./pages/Landing";
 import { Login } from "./pages/Login";
-import { Signup } from "./pages/Signup";
-import { Dashboard } from "./pages/Dashboard";
-import { Expenses } from "./pages/Expenses";
-import { Income } from "./pages/Income";
-import { Message } from "./pages/Message";
+// import { Signup } from "./pages/Signup";
+// import { Dashboard } from "./pages/Dashboard";
+// import { Expenses } from "./pages/Expenses";
+// import { Income } from "./pages/Income";
+// import { Message } from "./pages/Message";
 
 // components
 import { Sidebar } from "./components/Sidebar";
@@ -92,7 +92,7 @@ function App() {
                         // }
                         element={<Login />}
                     />
-                    <Route
+                    {/* <Route
                         path="/signup"
                         // element={
                         //     loginState ? (
@@ -134,7 +134,7 @@ function App() {
                         //     loginState ? <Message /> : <Navigate to="/login" />
                         // }
                         element={<Message />}
-                    />
+                    /> */}
                 </Routes>
             </BrowserRouter>
         </>
