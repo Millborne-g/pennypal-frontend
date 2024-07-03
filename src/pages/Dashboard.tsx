@@ -50,7 +50,7 @@ const valueFormatter = (value: number) => {
 
 export const Dashboard = () => {
     const userDetails = useSelector((state: any) => state.user.user);
-    
+
     const months = [
         "January",
         "February",
@@ -65,7 +65,7 @@ export const Dashboard = () => {
         "November",
         "December",
     ];
-    
+
     // const { allExpenses, allExpensesFetching, allExpensesLoading, allExpensesSuccess, addExpense, expensesLoadingMutation, SnackbarComponent: expensesSnackbar} = useExpenses();
     const {
         // allExpenses,
@@ -271,7 +271,6 @@ export const Dashboard = () => {
         }
     }, [expensesLoadingMutation, incomeLoadingMutation]);
 
-
     // get the screen size
     useEffect(() => {
         const handleResize = () => {
@@ -293,8 +292,10 @@ export const Dashboard = () => {
         }
     }, [windowWidth]);
 
-    console.log(userDetails);
-    
+    useEffect(() => {
+        refetchUsersExpenses();
+        refetchUsersIncomes();
+    }, []);
 
     return (
         <>
@@ -331,8 +332,8 @@ export const Dashboard = () => {
                     </SpacedContainer>
                     <Box sx={{ mb: "15px" }}>
                         <Typography>
-                            Welcome, {userDetails.firstName}! We're
-                            thrilled to have you here.👋
+                            Welcome, {userDetails.firstName}! We're thrilled to
+                            have you here.👋
                         </Typography>
                     </Box>
                     <Divider />
