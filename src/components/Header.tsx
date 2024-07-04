@@ -187,14 +187,16 @@ export const Header = () => {
                                         />
                                     }
                                 >
-                                        <Typography sx={{
+                                    <Typography
+                                        sx={{
                                             display: {
                                                 sm: "block",
-                                                xs: "none"
-                                            }
-                                        }}>
-                                            {userDetails.fullName}
-                                        </Typography>
+                                                xs: "none",
+                                            },
+                                        }}
+                                    >
+                                        {userDetails.fullName}
+                                    </Typography>
                                 </Button>
                                 <Menu
                                     anchorEl={anchorEl}
@@ -238,6 +240,22 @@ export const Header = () => {
                                         vertical: "bottom",
                                     }}
                                 >
+                                    {/* <MenuItem
+                                        onClick={() => {
+                                            dispatch(logoutUser());
+                                            navigate("/login");
+                                        }}
+                                    >
+                                        <Stack
+                                            direction="row"
+                                                alignItems="center"
+                                                py={2}
+                                        >
+                                            <Avatar>MG</Avatar>
+                                            <Typography>Test Name</Typography>
+                                        </Stack>
+                                        </MenuItem>
+                                        <hr /> */}
                                     <MenuItem
                                         onClick={() => {
                                             dispatch(logoutUser());
