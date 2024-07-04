@@ -1,4 +1,4 @@
-import{ useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // MUI imports
 import Box from "@mui/material/Box";
@@ -6,7 +6,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
+import LoadingButton from "@mui/lab/LoadingButton";
 import { Grid, IconButton, Stack } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -23,8 +23,6 @@ import { useSelector } from "react-redux";
 import { useMessage } from "../redux/hooks/use-message";
 import { useUser } from "../redux/hooks/use-user";
 
-// dotenv 
-
 // socket
 import io from "socket.io-client";
 const { VITE_BACKEND_URL } = import.meta.env;
@@ -33,6 +31,10 @@ const socket = io(VITE_BACKEND_URL);
 // components
 import { SpacedContainer } from "../components/containers/SpacedContainer";
 import PageContainer from "../components/containers/PageContainer";
+import { Loading } from "../components/Loading";
+
+// asset
+import NoMessage from "../assets/noMessages.png";
 
 interface userData {
     _id: number | string;
@@ -66,6 +68,8 @@ export const Message = () => {
         usersMessages,
         addMessage,
         refetchMessages,
+        fetchingQuery,
+        loadingMutation,
     } = useMessage({
         senderEmail: userDetails.email,
         recipientEmail: recipient?.email,
@@ -102,9 +106,52 @@ export const Message = () => {
     // Function to format date
     const formatDate = (dateString: Date) => {
         const date = new Date(dateString);
-        const formattedDate = date.toLocaleDateString(); // Format the date as needed
-        const formattedTime = date.toLocaleTimeString(); // Format the time as needed
-        return `${formattedDate} ${formattedTime}`;
+        const now = new Date();
+        const diffInSeconds = Math.floor(
+            (now.getTime() - date.getTime()) / 1000
+        );
+
+        const day = date.getDate();
+        const monthNames = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+        ];
+        const month = monthNames[date.getMonth()];
+        const year = date.getFullYear();
+        const formattedTime = date.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+
+        if (diffInSeconds >= 86400) {
+            return `${month} ${day}, ${year} at ${formattedTime}`;
+        }
+
+        let interval = Math.floor(diffInSeconds / 3600);
+        if (interval >= 1) {
+            return interval === 1
+                ? `an hour ago at ${formattedTime}`
+                : `${interval} hours ago at ${formattedTime}`;
+        }
+
+        interval = Math.floor(diffInSeconds / 60);
+        if (interval >= 1) {
+            return interval === 1
+                ? `a minute ago at ${formattedTime}`
+                : `${interval} minutes ago at ${formattedTime}`;
+        }
+
+        return `just now at ${formattedTime}`;
     };
 
     useEffect(() => {
@@ -238,6 +285,21 @@ export const Message = () => {
                                             // overflowY: "auto",
                                             height: "90%",
                                             width: 1,
+                                            overflowY: "auto",
+                                            "&::-webkit-scrollbar": {
+                                                width: "8px",
+                                            },
+                                            "&::-webkit-scrollbar-thumb": {
+                                                backgroundColor: "#888",
+                                                borderRadius: "4px",
+                                            },
+                                            "&::-webkit-scrollbar-thumb:hover":
+                                                {
+                                                    backgroundColor: "#555",
+                                                },
+                                            "&::-webkit-scrollbar-track": {
+                                                backgroundColor: "#f1f1f1",
+                                            },
                                         }}
                                     >
                                         {users.map((user, index) => (
@@ -388,6 +450,8 @@ export const Message = () => {
                                             sx={{
                                                 display: "flex",
                                                 flexDirection: "column",
+                                                alignItems: "center",
+                                                justifyContent: "center",
                                                 flexGrow: 1,
                                                 p: 2,
                                                 overflowY: "auto",
@@ -407,59 +471,92 @@ export const Message = () => {
                                                 },
                                             }}
                                         >
-                                            <Box>
-                                                {messages.map(
-                                                    (message, index) => (
-                                                        <Box
-                                                            key={index}
-                                                            sx={{
-                                                                display: "flex",
-                                                                flexDirection:
-                                                                    "column",
-                                                                mb: 1,
-                                                                alignItems:
-                                                                    message.senderEmail !==
-                                                                    userDetails.email
-                                                                        ? "flex-start"
-                                                                        : "flex-end",
+                                            <Stack width={1} height={1}>
+                                                {messages.length > 0 ? (
+                                                    <>
+                                                        {messages.map(
+                                                            (
+                                                                message,
+                                                                index
+                                                            ) => (
+                                                                <Box
+                                                                    key={index}
+                                                                    sx={{
+                                                                        display:
+                                                                            "flex",
+                                                                        flexDirection:
+                                                                            "column",
+                                                                        mb: 1,
+                                                                        alignItems:
+                                                                            message.senderEmail !==
+                                                                            userDetails.email
+                                                                                ? "flex-start"
+                                                                                : "flex-end",
+                                                                    }}
+                                                                >
+                                                                    <Box
+                                                                        sx={{
+                                                                            // display: "inline-block",
+                                                                            bgcolor:
+                                                                                message.senderEmail !==
+                                                                                userDetails.email
+                                                                                    ? "#e0e0e0"
+                                                                                    : "primary.light",
+                                                                            borderRadius: 5,
+                                                                            p: 3,
+                                                                            maxWidth:
+                                                                                "60%",
+                                                                            color:
+                                                                                message.senderEmail !==
+                                                                                userDetails.email
+                                                                                    ? "none"
+                                                                                    : "#FFFFFF",
+                                                                        }}
+                                                                    >
+                                                                        <Typography>
+                                                                            {
+                                                                                message.content
+                                                                            }
+                                                                        </Typography>
+                                                                    </Box>
+                                                                    <Box>
+                                                                        <Typography variant="caption">
+                                                                            {formatDate(
+                                                                                message.date
+                                                                            )}
+                                                                        </Typography>
+                                                                    </Box>
+                                                                </Box>
+                                                            )
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <Stack
+                                                        justifyContent="center"
+                                                        alignItems="center"
+                                                        height={1}
+                                                        gap={1}
+                                                        textAlign="center"
+                                                    >
+                                                        <img
+                                                            src={NoMessage}
+                                                            alt=""
+                                                            style={{
+                                                                width: "200px",
                                                             }}
-                                                        >
-                                                            <Box
-                                                                sx={{
-                                                                    // display: "inline-block",
-                                                                    bgcolor:
-                                                                        message.senderEmail !==
-                                                                        userDetails.email
-                                                                            ? "#e0e0e0"
-                                                                            : "primary.light",
-                                                                    borderRadius: 5,
-                                                                    p: 3,
-                                                                    maxWidth:
-                                                                        "60%",
-                                                                    color:
-                                                                        message.senderEmail !==
-                                                                        userDetails.email
-                                                                            ? "none"
-                                                                            : "#FFFFFF",
-                                                                }}
-                                                            >
-                                                                <Typography>
-                                                                    {
-                                                                        message.content
-                                                                    }
-                                                                </Typography>
-                                                            </Box>
-                                                            <Box>
-                                                                <Typography variant="caption">
-                                                                    {formatDate(
-                                                                        message.date
-                                                                    )}
-                                                                </Typography>
-                                                            </Box>
-                                                        </Box>
-                                                    )
+                                                        />
+                                                        <Typography variant="h6">
+                                                            No messages yet
+                                                        </Typography>
+                                                        <Typography>
+                                                            Start the
+                                                            conversation by
+                                                            sending your first
+                                                            message!
+                                                        </Typography>
+                                                    </Stack>
                                                 )}
-                                            </Box>
+                                            </Stack>
                                         </Box>
                                         <Divider />
                                         <form
@@ -486,8 +583,9 @@ export const Message = () => {
                                                             e.target.value
                                                         )
                                                     }
+                                                    disabled={loadingMutation}
                                                 />
-                                                <Button
+                                                <LoadingButton
                                                     variant="contained"
                                                     size="large"
                                                     sx={{
@@ -497,9 +595,10 @@ export const Message = () => {
                                                     onClick={
                                                         handleSubmitMessage
                                                     }
+                                                    loading={loadingMutation}
                                                 >
                                                     <SendIcon />
-                                                </Button>
+                                                </LoadingButton>
                                             </Box>
                                         </form>
                                     </Box>
@@ -524,6 +623,7 @@ export const Message = () => {
                     </Grid>
                 </PageContainer>
             </Box>
+            {fetchingQuery && <Loading />}
         </>
     );
 };
