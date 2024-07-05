@@ -14,6 +14,7 @@ import Logout from "@mui/icons-material/Logout";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Stack from "@mui/material/Stack";
+import { Divider } from "@mui/material";
 
 // MUI icons
 import MenuIcon from "@mui/icons-material/Menu";
@@ -39,7 +40,6 @@ export const Header = () => {
     const userDetails = useSelector((state: any) => state.user.user);
     const userLogin = useSelector((state: any) => state.user.login);
     const sidebarState = useSelector((state: any) => state.sidebar);
-
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -177,27 +177,38 @@ export const Header = () => {
                                     sx={{
                                         textTransform: "none",
                                         color: "#000000",
+                                        display: {
+                                            sm: "flex",
+                                            xs: "none",
+                                        },
                                     }}
                                     onClick={handleClick}
                                     startIcon={
                                         <Avatar
                                             sx={{ width: 30, height: 30 }}
-                                            alt={userDetails.name}
+                                            alt={userDetails.fullName}
                                             src={userDetails.userImage}
                                         />
                                     }
                                 >
-                                    <Typography
-                                        sx={{
-                                            display: {
-                                                sm: "block",
-                                                xs: "none",
-                                            },
-                                        }}
-                                    >
+                                    <Typography sx={{}}>
                                         {userDetails.fullName}
                                     </Typography>
                                 </Button>
+                                <IconButton
+                                    onClick={handleClick}
+                                    sx={{
+                                        display: {
+                                            sm: "none",
+                                            xs: "block",
+                                        },
+                                    }}
+                                >
+                                    <Avatar
+                                        alt={userDetails.fullName}
+                                        src={userDetails.userImage}
+                                    />
+                                </IconButton>
                                 <Menu
                                     anchorEl={anchorEl}
                                     id="account-menu"
@@ -207,6 +218,7 @@ export const Header = () => {
                                     PaperProps={{
                                         elevation: 0,
                                         sx: {
+                                            maxWidth: 500,
                                             overflow: "visible",
                                             filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
                                             mt: 1.5,
@@ -240,22 +252,32 @@ export const Header = () => {
                                         vertical: "bottom",
                                     }}
                                 >
-                                    {/* <MenuItem
-                                        onClick={() => {
-                                            dispatch(logoutUser());
-                                            navigate("/login");
-                                        }}
-                                    >
+                                    <Box sx={{ px: 2, pb: 1, pt: 0.5 }}>
                                         <Stack
                                             direction="row"
-                                                alignItems="center"
-                                                py={2}
+                                            alignItems="center"
                                         >
-                                            <Avatar>MG</Avatar>
-                                            <Typography>Test Name</Typography>
+                                            <Avatar
+                                                alt={userDetails.fullName}
+                                                src={userDetails.userImage}
+                                            />
+                                            <Stack>
+                                                <Typography width={1} noWrap>
+                                                    {userDetails.fullName}
+                                                </Typography>
+                                                <Typography
+                                                    variant="caption"
+                                                    width={1}
+                                                    noWrap
+                                                    color="#9e9e9e"
+                                                >
+                                                    {userDetails.email}
+                                                </Typography>
+                                            </Stack>
                                         </Stack>
-                                        </MenuItem>
-                                        <hr /> */}
+                                    </Box>
+
+                                    <Divider sx={{ width: 1 }} />
                                     <MenuItem
                                         onClick={() => {
                                             dispatch(logoutUser());
