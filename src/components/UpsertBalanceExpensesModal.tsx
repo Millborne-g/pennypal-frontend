@@ -92,7 +92,7 @@ export const UpsertBalanceExpensesModal = ({
             <Modal
                 open={true}
                 onClose={() => {
-                    setOpenModal(false);
+                    !load && setOpenModal(false);
                 }}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
