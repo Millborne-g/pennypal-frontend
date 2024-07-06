@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import {
     useGetAllUserQuery,
     useFindUserByEmailQuery,
@@ -9,6 +9,8 @@ import {
 
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps, AlertColor } from "@mui/material/Alert";
+
+import Swal from "sweetalert2";
 
 // for stacbar
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
@@ -27,8 +29,8 @@ interface ErrorMessage {
 
 export const useUser = ({
     email = "",
-    // password = "",
-}: { email?: string; password?: string } = {}) => {
+}: // password = "",
+{ email?: string; password?: string } = {}) => {
     // for stackbar
     const [stackText, setStackText] = useState("");
     const [openSuccessStack, setOpenSuccessStack] = useState(false);
@@ -45,6 +47,7 @@ export const useUser = ({
         isLoading: allUsersLoading,
         isFetching: allUsersFetching,
         isSuccess: allUsersSuccess,
+        error: allUsersErrorMessage,
     } = useGetAllUserQuery();
 
     const {
@@ -53,6 +56,7 @@ export const useUser = ({
         isLoading: findUserLoading,
         isFetching: findUserFetching,
         isSuccess: findUserSuccess,
+        error: findUserErrorMessage,
     }: {
         data?: {
             email: string;
@@ -62,6 +66,7 @@ export const useUser = ({
         isLoading?: boolean;
         isFetching?: boolean;
         isSuccess?: boolean;
+        error?: any;
     } = useFindUserByEmailQuery(email, {
         skip: email === "", // Skip the query if email is empty
     });
@@ -79,8 +84,8 @@ export const useUser = ({
     const [
         loginUser,
         {
-            // error: loginUserErrorMessage,
-            // isError: loginUserError,
+            error: loginUserErrorMessage,
+            isError: loginUserError,
             isLoading: loginUserLoading,
             isSuccess: loginUserSuccess,
         },
@@ -90,12 +95,15 @@ export const useUser = ({
     const successQuery = allUsersSuccess || findUserSuccess;
     const errorQuery = allUsersError || findUserError;
     const loadingQuery = allUsersLoading || findUserLoading;
-    const fetchingQuery =
-        allUsersFetching || findUserFetching;
+    const fetchingQuery = allUsersFetching || findUserFetching;
+    const errorMessageQuery = allUsersErrorMessage || findUserErrorMessage;
 
     // mutation
     const successMutation = registerUserSuccess || loginUserSuccess;
     const loadingMutation = registerUserLoading || loginUserLoading;
+    const errorMutation = registerUserError || loginUserError;
+    const errorMessageMutation =
+        registerUserErrorMessage || loginUserErrorMessage;
 
     // query
     useEffect(() => {
@@ -131,6 +139,33 @@ export const useUser = ({
             setOpenSuccessStack(true);
         }
     }, [registerUserLoading]);
+
+    // Error mutation
+    useEffect(() => {
+        if (errorMutation) {
+            const fetchBaseQueryError =
+                errorMessageMutation as FetchBaseQueryError;
+            if (fetchBaseQueryError && fetchBaseQueryError.status === 404) {
+                Swal.fire({
+                    title: "Server Error",
+                    text: "Error user actions! Please contact the dev team.",
+                    icon: "error",
+                });
+            }
+        }
+
+        if (errorQuery) {
+            const fetchBaseQueryError =
+                errorMessageQuery as FetchBaseQueryError;
+            if (fetchBaseQueryError?.status === "PARSING_ERROR") {
+                Swal.fire({
+                    title: "Server Error",
+                    text: "Error fetching users! Please contact the dev team.",
+                    icon: "error",
+                });
+            }
+        }
+    }, [errorMutation, errorQuery]);
 
     return {
         allUsers,

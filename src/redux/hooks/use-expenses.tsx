@@ -1,23 +1,32 @@
-import React, { useEffect, useState } from "react"
-import { useGetAllExpensesQuery, useGetExpensesByUserIdQuery, useAddExpenseMutation, useDeleteExpenseMutation } from "../reducers/api/expensesAPI";
+import React, { useEffect, useState } from "react";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import {
+    useGetAllExpensesQuery,
+    useGetExpensesByUserIdQuery,
+    useAddExpenseMutation,
+    useDeleteExpenseMutation,
+} from "../reducers/api/expensesAPI";
 
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert, { AlertProps, AlertColor } from '@mui/material/Alert';
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert, { AlertProps, AlertColor } from "@mui/material/Alert";
 
-// for stacbar 
+import Swal from "sweetalert2";
+
+// for stacbar
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
-    ref,
-  ) {
+    ref
+) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-  });
+});
 
-export const useExpenses = ({userId = ""}: {userId?: string} = {}) => {
-    
+export const useExpenses = ({ userId = "" }: { userId?: string } = {}) => {
     // for stackbar
-    const [stackText, setStackText] = useState('');
+    const [stackText, setStackText] = useState("");
     const [openSuccessStack, setOpenSuccessStack] = useState(false);
-    const [stackSeverity, setStackSeverity] = useState<AlertColor | undefined>('success');
+    const [stackSeverity, setStackSeverity] = useState<AlertColor | undefined>(
+        "success"
+    );
 
     const handleSuccessStackClose = () => {
         setOpenSuccessStack(false);
@@ -29,6 +38,7 @@ export const useExpenses = ({userId = ""}: {userId?: string} = {}) => {
         isLoading: allExpensesLoading,
         isFetching: allExpensesFetching,
         isSuccess: allExpensesSuccess,
+        error: allExpensesErrorMessage,
         refetch: refetchAllExpenses,
     } = useGetAllExpensesQuery();
 
@@ -38,6 +48,7 @@ export const useExpenses = ({userId = ""}: {userId?: string} = {}) => {
         isLoading: usersExpensesLoading,
         isFetching: usersExpensesFetching,
         isSuccess: usersExpensesSuccess,
+        error: usersExpensesErrorMessage,
         refetch: refetchUsersExpenses,
     } = useGetExpensesByUserIdQuery(userId, {
         skip: userId === "",
@@ -46,25 +57,29 @@ export const useExpenses = ({userId = ""}: {userId?: string} = {}) => {
     const [
         addExpense,
         {
-            isError: addExpensesError, 
-            isLoading: addExpensesLoading,  
-            isSuccess: addExpensesSuccess 
-        }]= useAddExpenseMutation();
+            error: addExpensesErrorMessage,
+            isError: addExpensesError,
+            isLoading: addExpensesLoading,
+            isSuccess: addExpensesSuccess,
+        },
+    ] = useAddExpenseMutation();
 
     const [
-        deleteExpense, 
+        deleteExpense,
         {
-            isError: deleteExpensesError, 
-            isLoading: deleteExpensesLoading,  
-            isSuccess: deleteExpensesSuccess 
-        }] = useDeleteExpenseMutation();
+            error: deleteExpensesErrorMessage,
+            isError: deleteExpensesError,
+            isLoading: deleteExpensesLoading,
+            isSuccess: deleteExpensesSuccess,
+        },
+    ] = useDeleteExpenseMutation();
 
     // fetch
     // useEffect(() => {
-        
+
     //     if (allExpensesSuccess) {
     //         dispatch(setExpensesData(allExpenses));
-            
+
     //     } else if (allExpensesError) {
     //         dispatch(setExpensesData([]));
     //     }
@@ -75,24 +90,29 @@ export const useExpenses = ({userId = ""}: {userId?: string} = {}) => {
     const errorQuery = allExpensesError || usersExpensesError;
     const loadingQuery = allExpensesLoading || usersExpensesLoading;
     const fetchingQuery = allExpensesFetching || usersExpensesFetching;
+    const errorMessageQuery =
+        allExpensesErrorMessage || usersExpensesErrorMessage;
 
     // mutation
     const expensesSuccessMutation = addExpensesSuccess || deleteExpensesSuccess;
     const expensesLoadingMutation = addExpensesLoading || deleteExpensesLoading;
     const expensesErrorMutation = addExpensesError || deleteExpensesError;
-    
+    const errorMutation = addExpensesError || deleteExpensesError;
+    const errorMessageMutation =
+        addExpensesErrorMessage || deleteExpensesErrorMessage;
+
     // mutation
     // useEffect(() => {
     //     let message = "";
-    //     // add mutation 
+    //     // add mutation
     //     if (addExpensesSuccess) {
     //         message = "Expense successfully added!";
     //         setStackSeverity('success');
     //         setStackText(message);
     //         setOpenSuccessStack(true);
     //     }
-        
-    //     // delete mutation 
+
+    //     // delete mutation
     //     if (deleteExpensesSuccess) {
     //         message = "Expense successfully deleted!";
     //         setStackSeverity('success');
@@ -100,7 +120,6 @@ export const useExpenses = ({userId = ""}: {userId?: string} = {}) => {
     //         setOpenSuccessStack(true);
     //     }
 
-        
     // }, [expensesSuccessMutation, expensesLoadingMutation]);
 
     // useEffect(() => {
@@ -119,33 +138,59 @@ export const useExpenses = ({userId = ""}: {userId?: string} = {}) => {
     //     }
 
     // },[expensesErrorMutation, expensesLoadingMutation])
-    
+
     useEffect(() => {
         if (addExpensesSuccess) {
             let message = "Expense successfully added!";
             if (addExpensesError) {
                 message = "Error adding, try to refresh the page.";
-                setStackSeverity('error');
+                setStackSeverity("error");
             }
-            
+
             setStackText(message);
             setOpenSuccessStack(true);
         }
-    },[addExpensesLoading])
+    }, [addExpensesLoading]);
 
-    // delete mutation 
+    // delete mutation
     useEffect(() => {
-    
         if (deleteExpensesSuccess) {
             let message = "Expense successfully deleted!";
             if (deleteExpensesError) {
                 message = "Error deleting, try to refresh the page.";
-                setStackSeverity('error');
+                setStackSeverity("error");
             }
             setStackText(message);
             setOpenSuccessStack(true);
         }
-    },[deleteExpensesLoading]);
+    }, [deleteExpensesLoading]);
+
+    // Error mutation & query
+    useEffect(() => {
+        if (errorMutation) {
+            const fetchBaseQueryError =
+                errorMessageMutation as FetchBaseQueryError;
+            if (fetchBaseQueryError && fetchBaseQueryError.status === 404) {
+                Swal.fire({
+                    title: "Server Error",
+                    text: "Error expenses actions! Please contact the dev team.",
+                    icon: "error",
+                });
+            }
+        }
+
+        if (errorQuery) {
+            const fetchBaseQueryError =
+                errorMessageQuery as FetchBaseQueryError;
+            if (fetchBaseQueryError?.status === "PARSING_ERROR") {
+                Swal.fire({
+                    title: "Server Error",
+                    text: "Error fetching expenses! Please contact the dev team.",
+                    icon: "error",
+                });
+            }
+        }
+    }, [errorMutation, errorQuery]);
 
     return {
         allExpenses,
@@ -161,12 +206,21 @@ export const useExpenses = ({userId = ""}: {userId?: string} = {}) => {
         expensesSuccessMutation,
         expensesLoadingMutation,
         expensesErrorMutation,
-        SnackbarComponent: ( // Return the Snackbar component as part of the returned object
-            <Snackbar open={openSuccessStack} autoHideDuration={3000} onClose={handleSuccessStackClose}>
-                <Alert onClose={handleSuccessStackClose} severity={stackSeverity} sx={{ width: '100%' }}>
+        // Return the Snackbar component as part of the returned object
+        SnackbarComponent: (
+            <Snackbar
+                open={openSuccessStack}
+                autoHideDuration={3000}
+                onClose={handleSuccessStackClose}
+            >
+                <Alert
+                    onClose={handleSuccessStackClose}
+                    severity={stackSeverity}
+                    sx={{ width: "100%" }}
+                >
                     {stackText}
                 </Alert>
             </Snackbar>
         ),
-    }
-}
+    };
+};

@@ -1,24 +1,32 @@
-import React, { useState, useEffect } from "react"
-import { useGetAllIncomeQuery, useGetIncomeByUserIdQuery, useAddIncomeMutation, useDeleteIncomeMutation } from "../reducers/api/incomeAPI";
+import React, { useState, useEffect } from "react";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import {
+    useGetAllIncomeQuery,
+    useGetIncomeByUserIdQuery,
+    useAddIncomeMutation,
+    useDeleteIncomeMutation,
+} from "../reducers/api/incomeAPI";
 
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert, { AlertProps, AlertColor } from '@mui/material/Alert';
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert, { AlertProps, AlertColor } from "@mui/material/Alert";
 
-// for stacbar 
+import Swal from "sweetalert2";
+
+// for stacbar
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
-    ref,
-  ) {
+    ref
+) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-  });
+});
 
-
-export const useIncome = ({userId = ""}: {userId?: string} = {}) => {
-
+export const useIncome = ({ userId = "" }: { userId?: string } = {}) => {
     // for stackbar
-    const [stackText, setStackText] = useState('');
+    const [stackText, setStackText] = useState("");
     const [openSuccessStack, setOpenSuccessStack] = useState(false);
-    const [stackSeverity, setStackSeverity] = useState<AlertColor | undefined>('success');
+    const [stackSeverity, setStackSeverity] = useState<AlertColor | undefined>(
+        "success"
+    );
     const handleSuccessStackClose = () => {
         setOpenSuccessStack(false);
     };
@@ -29,6 +37,7 @@ export const useIncome = ({userId = ""}: {userId?: string} = {}) => {
         isLoading: allIncomeLoading,
         isFetching: allIncomeFetching,
         isSuccess: allIncomeSuccess,
+        error: allIncomeErrorMessage,
         refetch: refetchAllIncome,
     } = useGetAllIncomeQuery();
 
@@ -38,6 +47,7 @@ export const useIncome = ({userId = ""}: {userId?: string} = {}) => {
         isLoading: usersIncomesLoading,
         isFetching: usersIncomeFetching,
         isSuccess: usersIncomesSuccess,
+        error: usersIncomesErrorMessage,
         refetch: refetchUsersIncomes,
     } = useGetIncomeByUserIdQuery(userId, {
         skip: userId === "",
@@ -46,46 +56,50 @@ export const useIncome = ({userId = ""}: {userId?: string} = {}) => {
     const [
         addIncome,
         {
-            isError: addIncomeError, 
-            isLoading: addIncomeLoading,  
-            isSuccess: addIncomeSuccess 
-        }]= useAddIncomeMutation();
-    
+            error: addIncomeErrorMessage,
+            isError: addIncomeError,
+            isLoading: addIncomeLoading,
+            isSuccess: addIncomeSuccess,
+        },
+    ] = useAddIncomeMutation();
+
     const [
-        deleteIncome, 
+        deleteIncome,
         {
-            isError: deleteIncomeError, 
-            isLoading: deleteIncomeLoading,  
-            isSuccess: deleteIncomeSuccess 
-        }] = useDeleteIncomeMutation();
-
-
+            error: deleteIncomeErrorMessage,
+            isError: deleteIncomeError,
+            isLoading: deleteIncomeLoading,
+            isSuccess: deleteIncomeSuccess,
+        },
+    ] = useDeleteIncomeMutation();
 
     // query
     const successQuery = allIncomeSuccess || usersIncomesSuccess;
     const errorQuery = allIncomeError || usersIncomesError;
     const loadingQuery = allIncomeLoading || usersIncomesLoading;
     const fetchingQuery = allIncomeFetching || usersIncomeFetching;
+    const errorMessageQuery = allIncomeErrorMessage || usersIncomesErrorMessage;
 
     // mutation
     const incomeSuccessMutation = addIncomeSuccess || deleteIncomeSuccess;
-
     const incomeLoadingMutation = addIncomeLoading || deleteIncomeLoading;
-    
+    const errorMutation = addIncomeError || deleteIncomeError;
+    const errorMessageMutation =
+        addIncomeErrorMessage || deleteIncomeErrorMessage;
+
     // add mutation
     useEffect(() => {
         if (addIncomeSuccess) {
             let message = "Income successfully added!";
             if (addIncomeError) {
                 message = "Error income, try to refresh the page.";
-                setStackSeverity('error');
+                setStackSeverity("error");
             }
-            
+
             setStackText(message);
             setOpenSuccessStack(true);
         }
-
-    },[addIncomeLoading]);
+    }, [addIncomeLoading]);
 
     // delete mutation
     useEffect(() => {
@@ -93,13 +107,40 @@ export const useIncome = ({userId = ""}: {userId?: string} = {}) => {
             let message = "Income successfully deleted!";
             if (deleteIncomeError) {
                 message = "Error income, try to refresh the page.";
-                setStackSeverity('error');
+                setStackSeverity("error");
             }
-            
+
             setStackText(message);
             setOpenSuccessStack(true);
         }
-    }, [deleteIncomeLoading])
+    }, [deleteIncomeLoading]);
+
+    // Error mutation & query
+    useEffect(() => {
+        if (errorMutation) {
+            const fetchBaseQueryError =
+                errorMessageMutation as FetchBaseQueryError;
+            if (fetchBaseQueryError && fetchBaseQueryError.status === 404) {
+                Swal.fire({
+                    title: "Server Error",
+                    text: "Error income actions! Please contact the dev team.",
+                    icon: "error",
+                });
+            }
+        }
+
+        if (errorQuery) {
+            const fetchBaseQueryError =
+                errorMessageQuery as FetchBaseQueryError;
+            if (fetchBaseQueryError?.status === "PARSING_ERROR") {
+                Swal.fire({
+                    title: "Server Error",
+                    text: "Error fetching income! Please contact the dev team.",
+                    icon: "error",
+                });
+            }
+        }
+    }, [errorMutation, errorQuery]);
 
     return {
         allIncome,
@@ -114,12 +155,21 @@ export const useIncome = ({userId = ""}: {userId?: string} = {}) => {
         deleteIncome,
         incomeLoadingMutation,
         incomeSuccessMutation,
-        SnackbarComponent: ( // Return the Snackbar component as part of the returned object
-            <Snackbar open={openSuccessStack} autoHideDuration={3000} onClose={handleSuccessStackClose}>
-                <Alert onClose={handleSuccessStackClose} severity={stackSeverity} sx={{ width: '100%' }}>
+        // Return the Snackbar component as part of the returned object
+        SnackbarComponent: (
+            <Snackbar
+                open={openSuccessStack}
+                autoHideDuration={3000}
+                onClose={handleSuccessStackClose}
+            >
+                <Alert
+                    onClose={handleSuccessStackClose}
+                    severity={stackSeverity}
+                    sx={{ width: "100%" }}
+                >
                     {stackText}
                 </Alert>
             </Snackbar>
         ),
-    }
-}
+    };
+};
