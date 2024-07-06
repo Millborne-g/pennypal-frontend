@@ -6,13 +6,13 @@ import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-import Button from "@mui/material/Button";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 // components
 import { ErrorSnackbar } from "../components/ErrorSnackbar";
@@ -58,6 +58,8 @@ export const UpsertBalanceExpensesModal = ({
     const [openErrorSnackBar, setOpenErrorSnackbar] = useState(false);
     const [snackbarText, setSnackbarText] = useState("");
 
+    const [load, setLoad] = useState<boolean>(false);
+
     const handleChange = (event: SelectChangeEvent) => {
         setCategory(event.target.value as string);
     };
@@ -71,7 +73,7 @@ export const UpsertBalanceExpensesModal = ({
                 user: userDetails._id,
             };
             // console.log("aaaaaaaaaaaah");
-
+            setLoad(true);
             await addFunction(newData);
             refetch && refetch();
             setOpenModal(false);
@@ -99,6 +101,7 @@ export const UpsertBalanceExpensesModal = ({
                     <IconButton
                         sx={{ position: "absolute", right: 13, top: 13 }}
                         onClick={() => setOpenModal(false)}
+                        disabled={load}
                     >
                         <CloseIcon />
                     </IconButton>
@@ -113,6 +116,7 @@ export const UpsertBalanceExpensesModal = ({
                                     value={category}
                                     label="Cathegory"
                                     onChange={handleChange}
+                                    disabled={load}
                                 >
                                     <MenuItem value={"Transportation"}>
                                         Transportation
@@ -129,6 +133,7 @@ export const UpsertBalanceExpensesModal = ({
                                     value={category}
                                     label="Cathegory"
                                     onChange={handleChange}
+                                    disabled={load}
                                 >
                                     <MenuItem value={"Income"}>Income</MenuItem>
                                     <MenuItem value={"Other"}>Other</MenuItem>
@@ -148,6 +153,7 @@ export const UpsertBalanceExpensesModal = ({
                             }}
                             sx={{ mb: 2 }}
                             value={amountDisplay}
+                            disabled={load}
                             onChange={(e) => {
                                 let value: any = e.target.value;
                                 if (value === "") {
@@ -171,9 +177,14 @@ export const UpsertBalanceExpensesModal = ({
                                 }
                             }}
                         />
-                        <Button fullWidth variant="contained" type="submit">
+                        <LoadingButton
+                            fullWidth
+                            variant="contained"
+                            type="submit"
+                            loading={load}
+                        >
                             Save
-                        </Button>
+                        </LoadingButton>
                     </form>
                 </Box>
             </Modal>
