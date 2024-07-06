@@ -398,9 +398,7 @@ export const Dashboard = () => {
                                                         currency: "PHP",
                                                     }
                                                 )
-                                                    .format(
-                                                        Math.floor(totalIncome)
-                                                    )
+                                                    .format(totalIncome)
                                                     .replace(/\.00$/, "")}
                                             </Typography>
                                             <Box
@@ -492,11 +490,7 @@ export const Dashboard = () => {
                                                         currency: "PHP",
                                                     }
                                                 )
-                                                    .format(
-                                                        Math.floor(
-                                                            totalExpenses
-                                                        )
-                                                    )
+                                                    .format(totalExpenses)
                                                     .replace(/\.00$/, "")}
                                             </Typography>
                                             <Box

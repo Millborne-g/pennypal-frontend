@@ -51,6 +51,7 @@ export const UpsertBalanceExpensesModal = ({
     const userDetails = useSelector((state: any) => state.user.user);
 
     const [amount, setAmount] = useState<number>(0);
+    const [amountDisplay, setAmountDisplay] = useState<String>("");
 
     const [category, setCategory] = useState("");
 
@@ -146,16 +147,26 @@ export const UpsertBalanceExpensesModal = ({
                                 ),
                             }}
                             sx={{ mb: 2 }}
-                            value={amount}
+                            value={amountDisplay}
                             onChange={(e) => {
-                                let value = e.target.value;
+                                let value: any = e.target.value;
                                 if (value === "") {
                                     setAmount(0);
+                                    setAmountDisplay("");
                                 } else {
-                                    const parsedValue = parseInt(value, 10);
-                                    // Check if the parsed value is a valid integer
-                                    if (Number.isInteger(parsedValue)) {
+                                    const parsedValue = parseFloat(value);
+                                    // Check if the parsed value is a valid number
+                                    if (!isNaN(parsedValue)) {
                                         setAmount(parsedValue);
+                                        setAmountDisplay(value);
+                                        if (
+                                            parsedValue % 1 !== 0 ||
+                                            value % 1 !== 0
+                                        ) {
+                                            setAmountDisplay(
+                                                parsedValue.toString()
+                                            );
+                                        }
                                     }
                                 }
                             }}
