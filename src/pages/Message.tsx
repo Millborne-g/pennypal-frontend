@@ -68,14 +68,14 @@ export const Message = () => {
         usersMessages,
         addMessage,
         refetchMessages,
-        fetchingQuery,
+        fetchingQuery: usersMessagesFetchingQuery,
         loadingMutation,
     } = useMessage({
         senderEmail: userDetails.email,
         recipientEmail: recipient?.email,
     });
 
-    const { allUsers } = useUser();
+    const { allUsers, fetchingQuery: allUsersFetchingQuery } = useUser();
     const handleSubmitMessage = async (event: any) => {
         event.preventDefault();
 
@@ -623,7 +623,9 @@ export const Message = () => {
                     </Grid>
                 </PageContainer>
             </Box>
-            {fetchingQuery && <Loading />}
+            {(usersMessagesFetchingQuery || allUsersFetchingQuery) && (
+                <Loading />
+            )}
         </>
     );
 };
