@@ -125,6 +125,7 @@ function App() {
                             loginState ? <Message /> : <Navigate to="/login" />
                         }
                     />
+                    <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
             </BrowserRouter>
         </>

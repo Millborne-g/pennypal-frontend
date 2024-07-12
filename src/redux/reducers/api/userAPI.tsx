@@ -12,8 +12,6 @@ interface userData {
 
 const { VITE_BACKEND_URL } = import.meta.env;
 
-console.log(VITE_BACKEND_URL);
-
 export const userAPI = createApi({
     reducerPath: "userAPI",
     baseQuery: fetchBaseQuery({ baseUrl: VITE_BACKEND_URL }),
