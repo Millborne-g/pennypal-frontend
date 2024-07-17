@@ -5,6 +5,7 @@ import {
     useGetIncomeByUserIdQuery,
     useAddIncomeMutation,
     useDeleteIncomeMutation,
+    useGetIncomeByDateRangeMutation,
 } from "../reducers/api/incomeAPI";
 
 import Snackbar from "@mui/material/Snackbar";
@@ -73,6 +74,16 @@ export const useIncome = ({ userId = "" }: { userId?: string } = {}) => {
         },
     ] = useDeleteIncomeMutation();
 
+    const [
+        getIncomeByDateRange,
+        {
+            error: getIncomeByDateRangeErrorMessage,
+            isError: getIncomeByDateRangeError,
+            isLoading: getIncomeByDateRangeLoading,
+            isSuccess: getIncomeByDateRangeSuccess,
+        },
+    ] = useGetIncomeByDateRangeMutation();
+
     // query
     const successQuery = allIncomeSuccess || usersIncomesSuccess;
     const errorQuery = allIncomeError || usersIncomesError;
@@ -81,11 +92,16 @@ export const useIncome = ({ userId = "" }: { userId?: string } = {}) => {
     const errorMessageQuery = allIncomeErrorMessage || usersIncomesErrorMessage;
 
     // mutation
-    const incomeSuccessMutation = addIncomeSuccess || deleteIncomeSuccess;
-    const incomeLoadingMutation = addIncomeLoading || deleteIncomeLoading;
-    const errorMutation = addIncomeError || deleteIncomeError;
+    const incomeSuccessMutation =
+        addIncomeSuccess || deleteIncomeSuccess || getIncomeByDateRangeSuccess;
+    const incomeLoadingMutation =
+        addIncomeLoading || deleteIncomeLoading || getIncomeByDateRangeLoading;
+    const errorMutation =
+        addIncomeError || deleteIncomeError || getIncomeByDateRangeError;
     const errorMessageMutation =
-        addIncomeErrorMessage || deleteIncomeErrorMessage;
+        addIncomeErrorMessage ||
+        deleteIncomeErrorMessage ||
+        getIncomeByDateRangeErrorMessage;
 
     // add mutation
     useEffect(() => {
@@ -155,6 +171,7 @@ export const useIncome = ({ userId = "" }: { userId?: string } = {}) => {
         deleteIncome,
         incomeLoadingMutation,
         incomeSuccessMutation,
+        getIncomeByDateRange,
         // Return the Snackbar component as part of the returned object
         SnackbarComponent: (
             <Snackbar

@@ -61,6 +61,14 @@ export const incomeAPI = createApi({
                 return [{ type: "income", idIncome }];
             },
         }),
+
+        getIncomeByDateRange: builder.mutation({
+            query: (dateRange) => ({
+                url: "/income/date-range",
+                method: "POST",
+                body: dateRange,
+            }),
+        }),
     }),
 });
 
@@ -69,5 +77,6 @@ export const {
     useGetIncomeByYearQuery, 
     useGetIncomeByUserIdQuery,
     useAddIncomeMutation, 
-    useDeleteIncomeMutation
+    useDeleteIncomeMutation,
+    useGetIncomeByDateRangeMutation
 } = incomeAPI

@@ -5,6 +5,7 @@ import {
     useGetExpensesByUserIdQuery,
     useAddExpenseMutation,
     useDeleteExpenseMutation,
+    useGetExpenseByDateRangeMutation,
 } from "../reducers/api/expensesAPI";
 
 import Snackbar from "@mui/material/Snackbar";
@@ -74,6 +75,16 @@ export const useExpenses = ({ userId = "" }: { userId?: string } = {}) => {
         },
     ] = useDeleteExpenseMutation();
 
+    const [
+        getExpenseByDateRange,
+        {
+            error: getExpenseByDateRangeErrorMessage,
+            isError: getExpenseByDateRangeError,
+            isLoading: getExpenseByDateRangeLoading,
+            isSuccess: getExpenseByDateRangeSuccess,
+        },
+    ] = useGetExpenseByDateRangeMutation();
+
     // fetch
     // useEffect(() => {
 
@@ -94,12 +105,22 @@ export const useExpenses = ({ userId = "" }: { userId?: string } = {}) => {
         allExpensesErrorMessage || usersExpensesErrorMessage;
 
     // mutation
-    const expensesSuccessMutation = addExpensesSuccess || deleteExpensesSuccess;
-    const expensesLoadingMutation = addExpensesLoading || deleteExpensesLoading;
-    const expensesErrorMutation = addExpensesError || deleteExpensesError;
-    const errorMutation = addExpensesError || deleteExpensesError;
+    const expensesSuccessMutation =
+        addExpensesSuccess ||
+        deleteExpensesSuccess ||
+        getExpenseByDateRangeSuccess;
+    const expensesLoadingMutation =
+        addExpensesLoading ||
+        deleteExpensesLoading ||
+        getExpenseByDateRangeLoading;
+    const expensesErrorMutation =
+        addExpensesError || deleteExpensesError || getExpenseByDateRangeError;
+    const errorMutation =
+        addExpensesError || deleteExpensesError || getExpenseByDateRangeError;
     const errorMessageMutation =
-        addExpensesErrorMessage || deleteExpensesErrorMessage;
+        addExpensesErrorMessage ||
+        deleteExpensesErrorMessage ||
+        getExpenseByDateRangeErrorMessage;
 
     // mutation
     // useEffect(() => {
@@ -206,6 +227,7 @@ export const useExpenses = ({ userId = "" }: { userId?: string } = {}) => {
         expensesSuccessMutation,
         expensesLoadingMutation,
         expensesErrorMutation,
+        getExpenseByDateRange,
         // Return the Snackbar component as part of the returned object
         SnackbarComponent: (
             <Snackbar

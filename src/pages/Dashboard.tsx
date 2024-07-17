@@ -43,6 +43,11 @@ import { openSidebar } from "../redux/reducers/sidebarSlice";
 import { useExpenses } from "../redux/hooks/use-expenses";
 import { useIncome } from "../redux/hooks/use-income";
 
+// Date Range
+import { DateRangePicker } from "rsuite";
+import "rsuite/dist/rsuite-no-reset.min.css";
+import { Stack } from "@mui/material";
+import { date } from "yup";
 
 const valueFormatter = (value: number) => {
     const formattedValue = value.toLocaleString();
@@ -76,6 +81,7 @@ export const Dashboard = () => {
         addExpense,
         expensesLoadingMutation,
         SnackbarComponent: expensesSnackbar,
+        getExpenseByDateRange,
     } = useExpenses({
         userId: userDetails._id,
     });
@@ -90,6 +96,7 @@ export const Dashboard = () => {
         addIncome,
         incomeLoadingMutation,
         SnackbarComponent: incomeSnackbar,
+        getIncomeByDateRange,
     } = useIncome({
         userId: userDetails._id,
     });
@@ -122,6 +129,8 @@ export const Dashboard = () => {
     const [currentMonth, setCurrentMonth] = useState(0);
     const [currentYear, setCurrentYear] = useState("");
     const [yearList, setYearList] = useState<number[]>([]);
+
+    const [dateRange, setDateRange] = useState<[Date, Date] | null>();
 
     const handleChange = (event: SelectChangeEvent) => {
         setCurrentYear(event.target.value);
@@ -231,6 +240,22 @@ export const Dashboard = () => {
         }
     };
 
+    const getCurrentDate = () => {
+        const currentDate = new Date();
+        const year = currentDate.getFullYear();
+        const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+        const day = currentDate.getDate().toString().padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+    };
+
+    const getStartDate = () => {
+        const currentDate = new Date();
+        const year = currentDate.getFullYear();
+
+        return `${year}-01-01`;
+    };
+
     // disable scroll
     useEffect(() => {
         if (expensesLoadingQuery && incomeLoadingQuery) {
@@ -243,6 +268,10 @@ export const Dashboard = () => {
     // fetch data
     useEffect(() => {
         if (!expensesFetchingQuery || !incomeFetchingQuery) {
+            setDateRange([
+                new Date(getStartDate()),
+                new Date(getCurrentDate()),
+            ]);
             setData();
         }
     }, [expensesFetchingQuery, incomeFetchingQuery, currentYear]);
@@ -306,8 +335,11 @@ export const Dashboard = () => {
                             Dashboard
                         </Typography>
                         {/* time range */}
-                        <Box>
-                            <FormControl fullWidth>
+                        <Stack
+                            justifyContent={"flex-end"}
+                            alignItems="flex-end"
+                        >
+                            {/* <FormControl fullWidth>
                                 <InputLabel>Year</InputLabel>
                                 <Select
                                     value={currentYear}
@@ -326,8 +358,63 @@ export const Dashboard = () => {
                                         </MenuItem>
                                     ))}
                                 </Select>
-                            </FormControl>
-                        </Box>
+                            </FormControl> */}
+                            <DateRangePicker
+                                showOneCalendar
+                                size="lg"
+                                format="MMM dd, yyyy"
+                                placeholder="Select Date Range"
+                                character=" - "
+                                style={{
+                                    width: "90%",
+                                }}
+                                value={dateRange}
+                                onChange={async (dates) => {
+                                    const convert = (date: Date) => {
+                                        const dateTemp = new Date(date);
+                                        const year = dateTemp.getFullYear();
+                                        const month = (dateTemp.getMonth() + 1)
+                                            .toString()
+                                            .padStart(2, "0"); // Months are zero-indexed
+                                        const day = dateTemp
+                                            .getDate()
+                                            .toString()
+                                            .padStart(2, "0");
+
+                                        // Format the date as YYYY-MM-DD
+                                        return `${year}-${month}-${day}`;
+                                    };
+                                    setDateRange(null);
+                                    if (dates) {
+                                        setDateRange(dates);
+                                        let expenses =
+                                            await getExpenseByDateRange({
+                                                userId: userDetails._id,
+                                                startDate: convert(dates[0]),
+                                                endDate: convert(dates[1]),
+                                            });
+                                        let income = await getIncomeByDateRange(
+                                            {
+                                                userId: userDetails._id,
+                                                startDate: convert(dates[0]),
+                                                endDate: convert(dates[1]),
+                                            }
+                                        );
+                                        console.log("expenses", expenses);
+                                        console.log("income", income);
+                                        
+                                    }
+
+                                    // dates?.map((date) => {
+                                    //     // let convertedDate = convert(date);
+                                    //     setDateRange((prevDate) => [
+                                    //         ...prevDate,
+                                    //         convertedDate,
+                                    //     ]);
+                                    // });
+                                }}
+                            />
+                        </Stack>
                     </SpacedContainer>
                     <Box sx={{ mb: "15px" }}>
                         <Typography>
