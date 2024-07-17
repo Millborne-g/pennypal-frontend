@@ -4,9 +4,7 @@ import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
-import {
-    DataGrid,
-} from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -26,6 +24,14 @@ import { UpsertBalanceExpensesModal } from "../components/UpsertBalanceExpensesM
 import { Loading } from "../components/Loading";
 import { SpacedContainer } from "../components/containers/SpacedContainer";
 import PageContainer from "../components/containers/PageContainer";
+import {
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
+    Stack,
+} from "@mui/material";
 
 interface ExpenseRow {
     id: number | string;
@@ -38,13 +44,19 @@ export const Expenses = () => {
     const userDetails = useSelector((state: any) => state.user.user);
 
     const {
-        allExpenses,
+        usersExpenses,
         loadingQuery,
         successQuery,
+        fetchingQuery,
+        expensesSuccessMutation,
+        expensesLoadingMutation,
         addExpense,
         deleteExpense,
+        refetchUsersExpenses,
         SnackbarComponent,
-    } = useExpenses();
+    } = useExpenses({
+        userId: userDetails._id,
+    });
 
     const [rows, setRows] = useState<ExpenseRow[]>([]);
 
@@ -52,6 +64,12 @@ export const Expenses = () => {
 
     const dispatch = useDispatch();
     const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
+
+    const [currentYear, setCurrentYear] = useState("");
+
+    const [yearList, setYearList] = useState<number[]>([]);
+    const [totalExpenses, setTotalExpenses] = useState(0);
+    // const [currentMonth, setCurrentMonth] = useState(0);
 
     const columns = [
         {
@@ -92,8 +110,9 @@ export const Expenses = () => {
                     }}
                 >
                     <IconButton
-                        onClick={() => {
-                            deleteExpense(params.id);
+                        onClick={async () => {
+                            await deleteExpense(params.id);
+                            refetchUsersExpenses();
                         }}
                     >
                         <DeleteIcon />
@@ -102,6 +121,25 @@ export const Expenses = () => {
             ),
         },
     ];
+
+    const months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ];
+
+    const handleChange = (event: SelectChangeEvent) => {
+        setCurrentYear(event.target.value);
+    };
 
     // get the screen size
     useEffect(() => {
@@ -128,61 +166,100 @@ export const Expenses = () => {
 
     const setData = () => {
         if (successQuery) {
-            if (allExpenses) {
-                interface expenseData {
-                    _id: number | string;
-                    category: string;
-                    amount: number;
-                    date: string;
-                    user: string;
+            if (usersExpenses) {
+                if (currentYear === "") {
+                    const thisYear = new Date().getFullYear();
+                    setCurrentYear(thisYear.toString());
+                }
+                // const thisMonth = new Date().getMonth();
+                // setCurrentMonth(thisMonth);
+                setRows([]);
+                setYearList([]);
+                setTotalExpenses(0);
+
+                // Extract unique years from allExpenses
+                let uniqueYearsExpenses = [
+                    ...new Set(
+                        usersExpenses.map((item: any) =>
+                            new Date(item.date).getFullYear()
+                        )
+                    ),
+                ];
+
+                // Combine unique years from both allIncome and allExpenses
+                let allUniqueYearsSet = new Set([...uniqueYearsExpenses]);
+
+                // Add the current year to the set if it doesn't exist
+                if (!allUniqueYearsSet.has(parseInt(currentYear))) {
+                    allUniqueYearsSet.add(parseInt(currentYear));
                 }
 
-                // Convert and sort the data by date in descending order
-                const sortedData = allExpenses
-                    .filter(
-                        (expense: expenseData) =>
-                            userDetails._id === expense.user
-                    )
-                    .map((expense: expenseData) => {
-                        const date = new Date(expense.date);
+                // Convert the set back to an array
+                let allUniqueYears: any = Array.from(allUniqueYearsSet);
 
-                        const year = date.getFullYear();
-                        const month = String(date.getMonth() + 1).padStart(
-                            2,
-                            "0"
-                        );
-                        const day = String(date.getDate()).padStart(2, "0");
-                        const hours = String(
-                            date.getHours() % 12 || 12
-                        ).padStart(2, "0");
-                        const minutes = String(date.getMinutes()).padStart(
-                            2,
-                            "0"
-                        );
-                        const ampm = date.getHours() >= 12 ? "PM" : "AM";
+                setYearList(allUniqueYears);
+                for (let i = 0; i < months.length; i++) {
+                    let totalExpensesPerMonth = 0;
+                    for (let x = 0; x < usersExpenses.length; x++) {
+                        let dateString = usersExpenses[x].date;
+                        let dateObject = new Date(dateString);
 
-                        return {
-                            id: expense._id,
-                            category: expense.category,
-                            date: `${year}-${month}-${day} ${hours}:${minutes} ${ampm}`,
-                            amount: expense.amount,
-                        };
-                    })
-                    .sort(
-                        (a, b) =>
-                            new Date(b.date).getTime() -
-                            new Date(a.date).getTime()
-                    );
+                        // Get the year and month
+                        let year = dateObject.getFullYear();
+                        let month = dateObject.toLocaleString("en-US", {
+                            month: "long",
+                        });
+                        if (currentYear === year.toString()) {
+                            if (months[i] === month) {
+                                totalExpensesPerMonth += usersExpenses[x]
+                                    .amount as number;
+                                const date = new Date(usersExpenses[x].date);
+                                const year = date.getFullYear();
+                                const month = String(
+                                    date.getMonth() + 1
+                                ).padStart(2, "0");
+                                const day = String(date.getDate()).padStart(
+                                    2,
+                                    "0"
+                                );
+                                const hours = String(
+                                    date.getHours() % 12 || 12
+                                ).padStart(2, "0");
+                                const minutes = String(
+                                    date.getMinutes()
+                                ).padStart(2, "0");
+                                const ampm =
+                                    date.getHours() >= 12 ? "PM" : "AM";
+                                setTotalExpenses(
+                                    (prevAmount) =>
+                                        prevAmount + usersExpenses[x].amount
+                                );
+                                let newData = {
+                                    id: usersExpenses[x]._id,
+                                    category: usersExpenses[x].category,
+                                    date: `${year}-${month}-${day} ${hours}:${minutes} ${ampm}`,
+                                    amount: usersExpenses[x].amount,
+                                };
+                                setRows((prevDataset) => [
+                                    ...prevDataset,
+                                    newData,
+                                ]);
+                            }
+                        }
+                    }
 
-                // Set the sorted data to the state
-                // console.log(sortedData);
+                    // const newData = {
+                    //     income: totalIncomePerMonth,
+                    //     expenses: totalExpensesPerMonth,
+                    //     month: months[i],
+                    // };
 
-                setRows(sortedData);
+                    // setDataset((prevDataset) => [...prevDataset, newData]);
+                }
             }
         }
     };
 
-    // disable scroll
     useEffect(() => {
         if (loadingQuery) {
             document.body.style.overflow = "hidden";
@@ -192,33 +269,87 @@ export const Expenses = () => {
     }, [loadingQuery]);
 
     useEffect(() => {
-        setData();
-    }, [allExpenses]);
+        if (!fetchingQuery) {
+            setData();
+        }
+    }, [fetchingQuery, successQuery, expensesSuccessMutation, currentYear]);
 
     return (
         <>
             <Box>
                 <CssBaseline />
                 <PageContainer>
-                    <SpacedContainer>
+                    <SpacedContainer padding={"10px 0"}>
                         <Typography fontSize={30} fontWeight={700} gutterBottom>
                             Expenses
                         </Typography>
+                        {/* time range */}
+                        <Box>
+                            <FormControl fullWidth>
+                                <InputLabel>Year</InputLabel>
+                                <Select
+                                    value={currentYear}
+                                    label="Year"
+                                    onChange={handleChange}
+                                    sx={{
+                                        bgcolor: "#FFF",
+                                    }}
+                                >
+                                    {yearList.map((year) => (
+                                        <MenuItem
+                                            key={year}
+                                            value={year.toString()}
+                                        >
+                                            {year}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Box>
                     </SpacedContainer>
                     <Divider />
                     <Box
                         sx={{
                             display: "flex",
-                            justifyContent: "flex-end",
+                            justifyContent: "space-between",
                             p: "15px 0",
                         }}
                     >
-                        <Button
-                            variant="contained"
-                            onClick={() => setOpenModal(true)}
-                        >
-                            Add Expense
-                        </Button>
+                        <Box>
+                            <Typography>Total Expenses</Typography>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 0.5,
+                                }}
+                            >
+                                <Typography
+                                    sx={{
+                                        fontSize: "35px",
+                                        fontWeight: "600",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
+                                    }}
+                                >
+                                    {new Intl.NumberFormat("en-PH", {
+                                        style: "currency",
+                                        currency: "PHP",
+                                    })
+                                        .format(totalExpenses)
+                                        .replace(/\.00$/, "")}
+                                </Typography>
+                            </Box>
+                        </Box>
+                        <Stack justifyContent="center">
+                            <Button
+                                variant="contained"
+                                onClick={() => setOpenModal(true)}
+                            >
+                                Add Expense
+                            </Button>
+                        </Stack>
                     </Box>
                     <Box sx={{ height: "100%" }}>
                         <Box
@@ -254,6 +385,7 @@ export const Expenses = () => {
                     setOpenModal={setOpenModal}
                     addBalExText={"Expense"}
                     addFunction={addExpense}
+                    refetch={refetchUsersExpenses}
                 />
             )}
 
@@ -261,7 +393,7 @@ export const Expenses = () => {
             {SnackbarComponent}
 
             {/* Loading */}
-            {loadingQuery && <Loading />}
+            {(loadingQuery || expensesLoadingMutation) && <Loading />}
         </>
     );
 };

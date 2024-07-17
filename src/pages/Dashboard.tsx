@@ -43,6 +43,7 @@ import { openSidebar } from "../redux/reducers/sidebarSlice";
 import { useExpenses } from "../redux/hooks/use-expenses";
 import { useIncome } from "../redux/hooks/use-income";
 
+
 const valueFormatter = (value: number) => {
     const formattedValue = value.toLocaleString();
     return `${formattedValue}php`;
@@ -66,9 +67,7 @@ export const Dashboard = () => {
         "December",
     ];
 
-    // const { allExpenses, allExpensesFetching, allExpensesLoading, allExpensesSuccess, addExpense, expensesLoadingMutation, SnackbarComponent: expensesSnackbar} = useExpenses();
     const {
-        // allExpenses,
         usersExpenses,
         refetchUsersExpenses,
         successQuery: expensesSuccessQuery,
