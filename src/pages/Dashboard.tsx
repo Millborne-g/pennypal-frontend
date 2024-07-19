@@ -17,15 +17,16 @@ import Grid from "@mui/material/Grid";
 import { BarChart } from "@mui/x-charts/BarChart";
 import WalletIcon from "@mui/icons-material/Wallet";
 import PaidIcon from "@mui/icons-material/Paid";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+// import InputLabel from "@mui/material/InputLabel";
+// import MenuItem from "@mui/material/MenuItem";
+// import FormControl from "@mui/material/FormControl";
+// import Select, { SelectChangeEvent } from "@mui/material/Select";
 import IconButton from "@mui/material/IconButton";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import SavingsIcon from "@mui/icons-material/Savings";
 import AddIcon from "@mui/icons-material/Add";
+import { Stack } from "@mui/material";
 
 // Components
 import { UpsertBalanceExpensesModal } from "../components/UpsertBalanceExpensesModal";
@@ -46,8 +47,6 @@ import { useIncome } from "../redux/hooks/use-income";
 // Date Range
 import { DateRangePicker } from "rsuite";
 import "rsuite/dist/rsuite-no-reset.min.css";
-import { Stack } from "@mui/material";
-import { date } from "yup";
 
 const valueFormatter = (value: number) => {
     const formattedValue = value.toLocaleString();
@@ -72,33 +71,40 @@ export const Dashboard = () => {
         "December",
     ];
 
+    const [dateRange, setDateRange] = useState<[Date, Date] | null>();
+    const [startDate, setStartDate] = useState<string>("");
+    const [endDate, setEndDate] = useState<string>("");
+
     const {
-        usersExpenses,
         refetchUsersExpenses,
         successQuery: expensesSuccessQuery,
         loadingQuery: expensesLoadingQuery,
-        fetchingQuery: expensesFetchingQuery,
+        // fetchingQuery: expensesFetchingQuery,
         addExpense,
         expensesLoadingMutation,
+        expensesByDateRange,
+        refetchExpensesByDateRange,
         SnackbarComponent: expensesSnackbar,
-        getExpenseByDateRange,
     } = useExpenses({
         userId: userDetails._id,
+        startDate,
+        endDate,
     });
 
     const {
-        // allIncome,
-        usersIncomes,
         refetchUsersIncomes,
         successQuery: incomeSuccessQuery,
         loadingQuery: incomeLoadingQuery,
-        fetchingQuery: incomeFetchingQuery,
+        // fetchingQuery: incomeFetchingQuery,
         addIncome,
         incomeLoadingMutation,
+        incomeByDateRange,
+        refetchIncomeByDateRange,
         SnackbarComponent: incomeSnackbar,
-        getIncomeByDateRange,
     } = useIncome({
         userId: userDetails._id,
+        startDate,
+        endDate,
     });
 
     const [dataset, setDataset] = useState<exbalDataType[]>([
@@ -127,104 +133,63 @@ export const Dashboard = () => {
     const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
     const [currentMonth, setCurrentMonth] = useState(0);
-    const [currentYear, setCurrentYear] = useState("");
-    const [yearList, setYearList] = useState<number[]>([]);
+    // const [currentYear, setCurrentYear] = useState("");
+    // const [yearList, setYearList] = useState<number[]>([]);
 
-    const [dateRange, setDateRange] = useState<[Date, Date] | null>();
+    const [usersExpensesData, setUsersExpensesData] = useState<any[] | null>(
+        null
+    );
+    const [usersIncomesData, setUsersIncomesData] = useState<any[] | null>(
+        null
+    );
 
-    const handleChange = (event: SelectChangeEvent) => {
-        setCurrentYear(event.target.value);
-    };
+    const [loading, setLoading] = useState<boolean>(true);
 
     const setData = () => {
         if (expensesSuccessQuery && incomeSuccessQuery) {
-            if (usersExpenses && usersIncomes) {
-                if (currentYear === "") {
-                    const thisYear = new Date().getFullYear();
-                    setCurrentYear(thisYear.toString());
-                }
+            if (usersExpensesData && usersIncomesData) {
                 const thisMonth = new Date().getMonth();
                 setCurrentMonth(thisMonth);
                 setDataset([]);
-                setYearList([]);
                 setTotalExpenses(0);
                 setTotalIncome(0);
 
-                // Extract unique years from allIncome
-                let uniqueYearsIncome = [
-                    ...new Set(
-                        usersIncomes.map((item: any) =>
-                            new Date(item.date).getFullYear()
-                        )
-                    ),
-                ];
-
-                // Extract unique years from allExpenses
-                let uniqueYearsExpenses = [
-                    ...new Set(
-                        usersExpenses.map((item: any) =>
-                            new Date(item.date).getFullYear()
-                        )
-                    ),
-                ];
-
-                // Combine unique years from both allIncome and allExpenses
-                let allUniqueYearsSet = new Set([
-                    ...uniqueYearsIncome,
-                    ...uniqueYearsExpenses,
-                ]);
-
-                // Add the current year to the set if it doesn't exist
-                if (!allUniqueYearsSet.has(parseInt(currentYear))) {
-                    allUniqueYearsSet.add(parseInt(currentYear));
-                }
-
-                // Convert the set back to an array
-                let allUniqueYears: any = Array.from(allUniqueYearsSet);
-
-                setYearList(allUniqueYears);
                 for (let i = 0; i < months.length; i++) {
                     let totalExpensesPerMonth = 0;
                     let totalIncomePerMonth = 0;
-                    for (let x = 0; x < usersExpenses.length; x++) {
+                    for (let x = 0; x < usersExpensesData.length; x++) {
                         // if(userDetails._id === usersExpenses[x].user){
-                        let dateString = usersExpenses[x].date;
+                        let dateString = usersExpensesData[x].date;
                         let dateObject = new Date(dateString);
 
                         // Get the year and month
-                        let year = dateObject.getFullYear();
+                        // let year = dateObject.getFullYear();
                         let month = dateObject.toLocaleString("en-US", {
                             month: "long",
                         });
-                        if (currentYear === year.toString()) {
-                            if (months[i] === month) {
-                                totalExpensesPerMonth += usersExpenses[x]
-                                    .amount as number;
-                                setTotalExpenses((ex: any) => {
-                                    return ex + usersExpenses[x].amount;
-                                });
-                            }
+
+                        if (months[i] === month) {
+                            totalExpensesPerMonth += usersExpensesData[x]
+                                .amount as number;
+                            setTotalExpenses((ex: any) => {
+                                return ex + usersExpensesData[x].amount;
+                            });
                         }
                         // }
                     }
-
-                    for (let x = 0; x < usersIncomes.length; x++) {
-                        let dateString = usersIncomes[x].date;
+                    for (let x = 0; x < usersIncomesData.length; x++) {
+                        let dateString = usersIncomesData[x].date;
                         let dateObject = new Date(dateString);
-
-                        // Get the year and month
-                        let year = dateObject.getFullYear();
                         let month = dateObject.toLocaleString("en-US", {
                             month: "long",
                         });
-                        if (currentYear === year.toString()) {
-                            if (months[i] === month) {
-                                totalIncomePerMonth += usersIncomes[x]
-                                    .amount as number;
-                                setTotalIncome((inc: any) => {
-                                    return inc + usersIncomes[x].amount;
-                                });
-                            }
+
+                        if (months[i] === month) {
+                            totalIncomePerMonth += usersIncomesData[x]
+                                .amount as number;
+                            setTotalIncome((inc: any) => {
+                                return inc + usersIncomesData[x].amount;
+                            });
                         }
                     }
 
@@ -256,6 +221,16 @@ export const Dashboard = () => {
         return `${year}-01-01`;
     };
 
+    const convertDate = (date: Date) => {
+        const dateTemp = new Date(date);
+        const year = dateTemp.getFullYear();
+        const month = (dateTemp.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-indexed
+        const day = dateTemp.getDate().toString().padStart(2, "0");
+
+        // Format the date as YYYY-MM-DD
+        return `${year}-${month}-${day}`;
+    };
+
     // disable scroll
     useEffect(() => {
         if (expensesLoadingQuery && incomeLoadingQuery) {
@@ -265,16 +240,26 @@ export const Dashboard = () => {
         }
     }, [expensesLoadingQuery, incomeLoadingQuery]);
 
+    useEffect(() => {
+        setStartDate(getStartDate());
+        setEndDate(getCurrentDate());
+        setDateRange([new Date(getStartDate()), new Date(getCurrentDate())]);
+    }, []);
+
+    useEffect(() => {
+        if (expensesByDateRange || incomeByDateRange) {
+            setUsersExpensesData(expensesByDateRange);
+            setUsersIncomesData(incomeByDateRange);
+        }
+    }, [expensesByDateRange, incomeByDateRange]);
+    
     // fetch data
     useEffect(() => {
-        if (!expensesFetchingQuery || !incomeFetchingQuery) {
-            setDateRange([
-                new Date(getStartDate()),
-                new Date(getCurrentDate()),
-            ]);
+        if (usersExpensesData || usersIncomesData) {
             setData();
+            setLoading(false);
         }
-    }, [expensesFetchingQuery, incomeFetchingQuery, currentYear]);
+    }, [usersExpensesData, usersIncomesData, dateRange]);
 
     useEffect(() => {
         if (dataset) {
@@ -290,14 +275,14 @@ export const Dashboard = () => {
         }
     }, [currentMonth, dataset]);
 
-    useEffect(() => {
-        if (currentYear !== "") {
-            if (!expensesLoadingMutation || !incomeLoadingMutation) {
-                const thisYear = new Date().getFullYear();
-                setCurrentYear(thisYear.toString());
-            }
-        }
-    }, [expensesLoadingMutation, incomeLoadingMutation]);
+    // useEffect(() => {
+    //     if (currentYear !== "") {
+    //         if (!expensesLoadingMutation || !incomeLoadingMutation) {
+    //             const thisYear = new Date().getFullYear();
+    //             setCurrentYear(thisYear.toString());
+    //         }
+    //     }
+    // }, [expensesLoadingMutation, incomeLoadingMutation]);
 
     // get the screen size
     useEffect(() => {
@@ -364,54 +349,25 @@ export const Dashboard = () => {
                                 size="lg"
                                 format="MMM dd, yyyy"
                                 placeholder="Select Date Range"
-                                character=" - "
+                                character=" to "
                                 style={{
                                     width: "90%",
                                 }}
                                 value={dateRange}
                                 onChange={async (dates) => {
-                                    const convert = (date: Date) => {
-                                        const dateTemp = new Date(date);
-                                        const year = dateTemp.getFullYear();
-                                        const month = (dateTemp.getMonth() + 1)
-                                            .toString()
-                                            .padStart(2, "0"); // Months are zero-indexed
-                                        const day = dateTemp
-                                            .getDate()
-                                            .toString()
-                                            .padStart(2, "0");
-
-                                        // Format the date as YYYY-MM-DD
-                                        return `${year}-${month}-${day}`;
-                                    };
                                     setDateRange(null);
                                     if (dates) {
+                                        setStartDate(convertDate(dates[0]));
+                                        setEndDate(convertDate(dates[1]));
                                         setDateRange(dates);
-                                        let expenses =
-                                            await getExpenseByDateRange({
-                                                userId: userDetails._id,
-                                                startDate: convert(dates[0]),
-                                                endDate: convert(dates[1]),
-                                            });
-                                        let income = await getIncomeByDateRange(
-                                            {
-                                                userId: userDetails._id,
-                                                startDate: convert(dates[0]),
-                                                endDate: convert(dates[1]),
-                                            }
-                                        );
-                                        console.log("expenses", expenses);
-                                        console.log("income", income);
-                                        
+                                    } else {
+                                        setStartDate(getStartDate());
+                                        setEndDate(getCurrentDate());
+                                        setDateRange([
+                                            new Date(getStartDate()),
+                                            new Date(getCurrentDate()),
+                                        ]);
                                     }
-
-                                    // dates?.map((date) => {
-                                    //     // let convertedDate = convert(date);
-                                    //     setDateRange((prevDate) => [
-                                    //         ...prevDate,
-                                    //         convertedDate,
-                                    //     ]);
-                                    // });
                                 }}
                             />
                         </Stack>
@@ -728,7 +684,7 @@ export const Dashboard = () => {
                             }}
                         >
                             <Typography fontWeight={600}>
-                                Income - Expense
+                                Income - Expense (Monthly)
                             </Typography>
                             <Box
                                 sx={{
@@ -804,8 +760,8 @@ export const Dashboard = () => {
                     }
                     refetch={
                         addBalExText === "Expense"
-                            ? refetchUsersExpenses
-                            : refetchUsersIncomes
+                            ? refetchExpensesByDateRange
+                            : refetchIncomeByDateRange
                     }
                 />
             )}
@@ -817,9 +773,13 @@ export const Dashboard = () => {
             {incomeSnackbar}
 
             {/* Loading */}
-            {((expensesLoadingQuery && incomeLoadingQuery) ||
+            {/* {((expensesLoadingQuery && incomeLoadingQuery) ||
                 expensesLoadingMutation ||
-                incomeLoadingMutation) && <Loading />}
+                incomeLoadingMutation) && <Loading />} */}
+
+            {(loading || expensesLoadingMutation || incomeLoadingMutation) && (
+                <Loading />
+            )}
         </>
     );
 };

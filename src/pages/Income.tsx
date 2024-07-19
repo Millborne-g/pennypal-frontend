@@ -23,8 +23,12 @@ import { useIncome } from "../redux/hooks/use-income";
 import { UpsertBalanceExpensesModal } from "../components/UpsertBalanceExpensesModal";
 import { Loading } from "../components/Loading";
 import PageContainer from "../components/containers/PageContainer";
-import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack } from "@mui/material";
+import { Stack } from "@mui/material";
 import { SpacedContainer } from "../components/containers/SpacedContainer";
+
+// Date Range
+import { DateRangePicker } from "rsuite";
+import "rsuite/dist/rsuite-no-reset.min.css";
 
 interface IncomeRow {
     id: number | string;
@@ -36,19 +40,26 @@ interface IncomeRow {
 export const Income = () => {
     const userDetails = useSelector((state: any) => state.user.user);
 
+    const [dateRange, setDateRange] = useState<[Date, Date] | null>();
+    const [startDate, setStartDate] = useState<string>("");
+    const [endDate, setEndDate] = useState<string>("");
+
+    const [usersIncomeData, setUsersIncomeData] = useState<any[] | null>(null);
+
     const {
-        usersIncomes,
         loadingQuery,
         successQuery,
-        fetchingQuery,
-        incomeSuccessMutation,
         incomeLoadingMutation,
         addIncome,
         deleteIncome,
+        incomeByDateRange,
+        refetchIncomeByDateRange,
         refetchUsersIncomes,
         SnackbarComponent,
     } = useIncome({
         userId: userDetails._id,
+        startDate,
+        endDate,
     });
 
     const [rows, setRows] = useState<IncomeRow[]>([]);
@@ -58,25 +69,9 @@ export const Income = () => {
     const dispatch = useDispatch();
     const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
-    const [currentYear, setCurrentYear] = useState("");
     const [totalIncome, setTotalIncome] = useState(0);
 
-    const [yearList, setYearList] = useState<number[]>([]);
-
-    const months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-    ];
+    const [loading, setLoading] = useState<boolean>(true);
 
     const columns = [
         {
@@ -129,8 +124,72 @@ export const Income = () => {
         },
     ];
 
-    const handleChange = (event: SelectChangeEvent) => {
-        setCurrentYear(event.target.value);
+    const getCurrentDate = () => {
+        const currentDate = new Date();
+        const year = currentDate.getFullYear();
+        const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+        const day = currentDate.getDate().toString().padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+    };
+
+    const getStartDate = () => {
+        const currentDate = new Date();
+        const year = currentDate.getFullYear();
+
+        return `${year}-01-01`;
+    };
+
+    const convertDate = (date: Date) => {
+        const dateTemp = new Date(date);
+        const year = dateTemp.getFullYear();
+        const month = (dateTemp.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-indexed
+        const day = dateTemp.getDate().toString().padStart(2, "0");
+
+        // Format the date as YYYY-MM-DD
+        return `${year}-${month}-${day}`;
+    };
+
+    const refreshAll = async () => {
+        await refetchIncomeByDateRange();
+        setStartDate(getStartDate());
+        setEndDate(getCurrentDate());
+        setDateRange([new Date(getStartDate()), new Date(getCurrentDate())]);
+    };
+
+    const setData = () => {
+        if (successQuery) {
+            if (usersIncomeData) {
+                setRows([]);
+                setTotalIncome(0);
+
+                for (let x = 0; x < usersIncomeData.length; x++) {
+                    let totalExpensesPerMonth = 0;
+                    totalExpensesPerMonth += usersIncomeData[x]
+                        .amount as number;
+                    const date = new Date(usersIncomeData[x].date);
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, "0");
+                    const day = String(date.getDate()).padStart(2, "0");
+                    const hours = String(date.getHours() % 12 || 12).padStart(
+                        2,
+                        "0"
+                    );
+                    const minutes = String(date.getMinutes()).padStart(2, "0");
+                    const ampm = date.getHours() >= 12 ? "PM" : "AM";
+                    setTotalIncome(
+                        (prevAmount) => prevAmount + usersIncomeData[x].amount
+                    );
+                    let newData = {
+                        id: usersIncomeData[x]._id,
+                        category: usersIncomeData[x].category,
+                        date: `${year}-${month}-${day} ${hours}:${minutes} ${ampm}`,
+                        amount: usersIncomeData[x].amount,
+                    };
+                    setRows((prevDataset) => [...prevDataset, newData]);
+                }
+            }
+        }
     };
 
     // get the screen size
@@ -149,107 +208,24 @@ export const Income = () => {
     }, []); // Empty dependency array means this effect runs once after the initial render
 
     useEffect(() => {
+        setStartDate(getStartDate());
+        setEndDate(getCurrentDate());
+        setDateRange([new Date(getStartDate()), new Date(getCurrentDate())]);
+    }, []);
+
+    useEffect(() => {
+        if (incomeByDateRange) {
+            setUsersIncomeData(incomeByDateRange);
+        }
+    }, [incomeByDateRange]);
+
+    useEffect(() => {
         if (windowWidth < 1100) {
             dispatch(openSidebar(false));
         } else if (windowWidth > 1100) {
             dispatch(openSidebar(true));
         }
     }, [windowWidth]);
-
-    const setData = () => {
-        if (successQuery) {
-            if (usersIncomes) {
-                if (currentYear === "") {
-                    const thisYear = new Date().getFullYear();
-                    setCurrentYear(thisYear.toString());
-                }
-                // const thisMonth = new Date().getMonth();
-                // setCurrentMonth(thisMonth);
-                setRows([]);
-                // setYearList([]);
-                setTotalIncome(0);
-
-                // Extract unique years from allExpenses
-                let uniqueYearsIncomes = [
-                    ...new Set(
-                        usersIncomes.map((item: any) =>
-                            new Date(item.date).getFullYear()
-                        )
-                    ),
-                ];
-
-                // Combine unique years from both allIncome and allExpenses
-                let allUniqueYearsSet = new Set([...uniqueYearsIncomes]);
-
-                // Add the current year to the set if it doesn't exist
-                if (!allUniqueYearsSet.has(parseInt(currentYear))) {
-                    allUniqueYearsSet.add(parseInt(currentYear));
-                }
-
-                // Convert the set back to an array
-                let allUniqueYears: any = Array.from(allUniqueYearsSet);
-                setYearList(allUniqueYears);
-                for (let i = 0; i < months.length; i++) {
-                    let totalIncomePerMonth = 0;
-                    for (let x = 0; x < usersIncomes.length; x++) {
-                        let dateString = usersIncomes[x].date;
-                        let dateObject = new Date(dateString);
-
-                        // Get the year and month
-                        let year = dateObject.getFullYear();
-                        let month = dateObject.toLocaleString("en-US", {
-                            month: "long",
-                        });
-                        if (currentYear === year.toString()) {
-                            if (months[i] === month) {
-                                totalIncomePerMonth += usersIncomes[x]
-                                    .amount as number;
-                                const date = new Date(usersIncomes[x].date);
-                                const year = date.getFullYear();
-                                const month = String(
-                                    date.getMonth() + 1
-                                ).padStart(2, "0");
-                                const day = String(date.getDate()).padStart(
-                                    2,
-                                    "0"
-                                );
-                                const hours = String(
-                                    date.getHours() % 12 || 12
-                                ).padStart(2, "0");
-                                const minutes = String(
-                                    date.getMinutes()
-                                ).padStart(2, "0");
-                                const ampm =
-                                    date.getHours() >= 12 ? "PM" : "AM";
-                                setTotalIncome(
-                                    (prevAmount) =>
-                                        prevAmount + usersIncomes[x].amount
-                                );
-                                let newData = {
-                                    id: usersIncomes[x]._id,
-                                    category: usersIncomes[x].category,
-                                    date: `${year}-${month}-${day} ${hours}:${minutes} ${ampm}`,
-                                    amount: usersIncomes[x].amount,
-                                };
-                                setRows((prevDataset) => [
-                                    ...prevDataset,
-                                    newData,
-                                ]);
-                            }
-                        }
-                    }
-
-                    // const newData = {
-                    //     income: totalIncomePerMonth,
-                    //     expenses: totalExpensesPerMonth,
-                    //     month: months[i],
-                    // };
-
-                    // setDataset((prevDataset) => [...prevDataset, newData]);
-                }
-            }
-        }
-    };
 
     // disable scroll
     useEffect(() => {
@@ -261,10 +237,11 @@ export const Income = () => {
     }, [loadingQuery]);
 
     useEffect(() => {
-        if (!fetchingQuery) {
+        if (usersIncomeData) {
             setData();
+            setLoading(false);
         }
-    }, [fetchingQuery, successQuery, incomeSuccessMutation, currentYear]);
+    }, [usersIncomeData]);
 
     return (
         <>
@@ -276,28 +253,41 @@ export const Income = () => {
                             Income
                         </Typography>
                         {/* time range */}
-                        <Box>
-                            <FormControl fullWidth>
-                                <InputLabel>Year</InputLabel>
-                                <Select
-                                    value={currentYear}
-                                    label="Year"
-                                    onChange={handleChange}
-                                    sx={{
-                                        bgcolor: "#FFF",
-                                    }}
-                                >
-                                    {yearList.map((year) => (
-                                        <MenuItem
-                                            key={year}
-                                            value={year.toString()}
-                                        >
-                                            {year}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </Box>
+                        <Stack
+                            sx={{
+                                alignItems: {
+                                    sm: "flex-end",
+                                    xs: "flex-start",
+                                },
+                            }}
+                        >
+                            <DateRangePicker
+                                showOneCalendar
+                                size="lg"
+                                format="MMM dd, yyyy"
+                                placeholder="Select Date Range"
+                                character=" to "
+                                style={{
+                                    width: "90%",
+                                }}
+                                value={dateRange}
+                                onChange={async (dates) => {
+                                    setDateRange(null);
+                                    if (dates) {
+                                        setStartDate(convertDate(dates[0]));
+                                        setEndDate(convertDate(dates[1]));
+                                        setDateRange(dates);
+                                    } else {
+                                        setStartDate(getStartDate());
+                                        setEndDate(getCurrentDate());
+                                        setDateRange([
+                                            new Date(getStartDate()),
+                                            new Date(getCurrentDate()),
+                                        ]);
+                                    }
+                                }}
+                            />
+                        </Stack>
                     </SpacedContainer>
                     <Divider />
                     <Box
@@ -305,6 +295,10 @@ export const Income = () => {
                             display: "flex",
                             justifyContent: "space-between",
                             p: "15px 0",
+                            flexDirection: {
+                                sm: "row",
+                                xs: "column",
+                            },
                         }}
                     >
                         <Box>
@@ -377,7 +371,7 @@ export const Income = () => {
                     setOpenModal={setOpenModal}
                     addBalExText={"Income"}
                     addFunction={addIncome}
-                    refetch={refetchUsersIncomes}
+                    refetch={refreshAll}
                 />
             )}
 
@@ -385,7 +379,7 @@ export const Income = () => {
             {SnackbarComponent}
 
             {/* Loading */}
-            {(loadingQuery || incomeLoadingMutation) && <Loading />}
+            {(loading || incomeLoadingMutation) && <Loading />}
         </>
     );
 };

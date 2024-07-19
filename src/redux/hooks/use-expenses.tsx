@@ -5,7 +5,7 @@ import {
     useGetExpensesByUserIdQuery,
     useAddExpenseMutation,
     useDeleteExpenseMutation,
-    useGetExpenseByDateRangeMutation,
+    useGetExpenseByDateRangeQuery,
 } from "../reducers/api/expensesAPI";
 
 import Snackbar from "@mui/material/Snackbar";
@@ -21,7 +21,11 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export const useExpenses = ({ userId = "" }: { userId?: string } = {}) => {
+export const useExpenses = ({
+    userId = "",
+    startDate = "",
+    endDate = "",
+}: { userId?: string; startDate?: string; endDate?: string } = {}) => {
     // for stackbar
     const [stackText, setStackText] = useState("");
     const [openSuccessStack, setOpenSuccessStack] = useState(false);
@@ -55,6 +59,25 @@ export const useExpenses = ({ userId = "" }: { userId?: string } = {}) => {
         skip: userId === "",
     });
 
+    const {
+        data: expensesByDateRange,
+        isError: expensesByDateRangeError,
+        isLoading: expensesByDateRangeLoading,
+        isFetching: expensesByDateRangeFetching,
+        isSuccess: expensesByDateRangeSuccess,
+        error: expensesByDateRangeErrorMessage,
+        refetch: refetchExpensesByDateRange,
+    } = useGetExpenseByDateRangeQuery(
+        {
+            userId,
+            startDate,
+            endDate,
+        },
+        {
+            skip: startDate === "" && endDate === "",
+        }
+    );
+
     const [
         addExpense,
         {
@@ -75,16 +98,6 @@ export const useExpenses = ({ userId = "" }: { userId?: string } = {}) => {
         },
     ] = useDeleteExpenseMutation();
 
-    const [
-        getExpenseByDateRange,
-        {
-            error: getExpenseByDateRangeErrorMessage,
-            isError: getExpenseByDateRangeError,
-            isLoading: getExpenseByDateRangeLoading,
-            isSuccess: getExpenseByDateRangeSuccess,
-        },
-    ] = useGetExpenseByDateRangeMutation();
-
     // fetch
     // useEffect(() => {
 
@@ -96,31 +109,41 @@ export const useExpenses = ({ userId = "" }: { userId?: string } = {}) => {
     //     }
     // }, [allExpenses, allExpensesSuccess, allExpensesError]);
 
+    // data: expenseByDateRange,
+    //     isError: expenseByDateRangeError,
+    //     isLoading: expenseByDateRangeLoading,
+    //     isFetching: expenseByDateRangeFetching,
+    //     isSuccess: expenseByDateRangeSuccess,
+    //     error: expenseByDateRangeErrorMessage,
+    //     refetch: refetchExpenseByDateRange,
+
     // query
-    const successQuery = allExpensesSuccess || usersExpensesSuccess;
-    const errorQuery = allExpensesError || usersExpensesError;
-    const loadingQuery = allExpensesLoading || usersExpensesLoading;
-    const fetchingQuery = allExpensesFetching || usersExpensesFetching;
+    const successQuery =
+        allExpensesSuccess ||
+        usersExpensesSuccess ||
+        expensesByDateRangeSuccess;
+    const errorQuery =
+        allExpensesError || usersExpensesError || expensesByDateRangeError;
+    const loadingQuery =
+        allExpensesLoading ||
+        usersExpensesLoading ||
+        expensesByDateRangeLoading;
+    const fetchingQuery =
+        allExpensesFetching ||
+        usersExpensesFetching ||
+        expensesByDateRangeFetching;
     const errorMessageQuery =
-        allExpensesErrorMessage || usersExpensesErrorMessage;
+        allExpensesErrorMessage ||
+        usersExpensesErrorMessage ||
+        expensesByDateRangeErrorMessage;
 
     // mutation
-    const expensesSuccessMutation =
-        addExpensesSuccess ||
-        deleteExpensesSuccess ||
-        getExpenseByDateRangeSuccess;
-    const expensesLoadingMutation =
-        addExpensesLoading ||
-        deleteExpensesLoading ||
-        getExpenseByDateRangeLoading;
-    const expensesErrorMutation =
-        addExpensesError || deleteExpensesError || getExpenseByDateRangeError;
-    const errorMutation =
-        addExpensesError || deleteExpensesError || getExpenseByDateRangeError;
+    const expensesSuccessMutation = addExpensesSuccess || deleteExpensesSuccess;
+    const expensesLoadingMutation = addExpensesLoading || deleteExpensesLoading;
+    const expensesErrorMutation = addExpensesError || deleteExpensesError;
+    const errorMutation = addExpensesError || deleteExpensesError;
     const errorMessageMutation =
-        addExpensesErrorMessage ||
-        deleteExpensesErrorMessage ||
-        getExpenseByDateRangeErrorMessage;
+        addExpensesErrorMessage || deleteExpensesErrorMessage;
 
     // mutation
     // useEffect(() => {
@@ -227,7 +250,8 @@ export const useExpenses = ({ userId = "" }: { userId?: string } = {}) => {
         expensesSuccessMutation,
         expensesLoadingMutation,
         expensesErrorMutation,
-        getExpenseByDateRange,
+        expensesByDateRange,
+        refetchExpensesByDateRange,
         // Return the Snackbar component as part of the returned object
         SnackbarComponent: (
             <Snackbar

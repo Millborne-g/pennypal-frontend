@@ -5,7 +5,7 @@ import {
     useGetIncomeByUserIdQuery,
     useAddIncomeMutation,
     useDeleteIncomeMutation,
-    useGetIncomeByDateRangeMutation,
+    useGetIncomeByDateRangeQuery,
 } from "../reducers/api/incomeAPI";
 
 import Snackbar from "@mui/material/Snackbar";
@@ -21,7 +21,11 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export const useIncome = ({ userId = "" }: { userId?: string } = {}) => {
+export const useIncome = ({
+    userId = "",
+    startDate = "",
+    endDate = "",
+}: { userId?: string; startDate?: string; endDate?: string } = {}) => {
     // for stackbar
     const [stackText, setStackText] = useState("");
     const [openSuccessStack, setOpenSuccessStack] = useState(false);
@@ -54,6 +58,25 @@ export const useIncome = ({ userId = "" }: { userId?: string } = {}) => {
         skip: userId === "",
     });
 
+    const {
+        data: incomeByDateRange,
+        isError: incomeByDateRangeError,
+        isLoading: incomeByDateRangeLoading,
+        isFetching: incomeByDateRangeFetching,
+        isSuccess: incomeByDateRangeSuccess,
+        error: incomeByDateRangeErrorMessage,
+        refetch: refetchIncomeByDateRange,
+    } = useGetIncomeByDateRangeQuery(
+        {
+            userId,
+            startDate,
+            endDate,
+        },
+        {
+            skip: startDate === "" && endDate === "",
+        }
+    );
+
     const [
         addIncome,
         {
@@ -74,34 +97,26 @@ export const useIncome = ({ userId = "" }: { userId?: string } = {}) => {
         },
     ] = useDeleteIncomeMutation();
 
-    const [
-        getIncomeByDateRange,
-        {
-            error: getIncomeByDateRangeErrorMessage,
-            isError: getIncomeByDateRangeError,
-            isLoading: getIncomeByDateRangeLoading,
-            isSuccess: getIncomeByDateRangeSuccess,
-        },
-    ] = useGetIncomeByDateRangeMutation();
-
     // query
-    const successQuery = allIncomeSuccess || usersIncomesSuccess;
-    const errorQuery = allIncomeError || usersIncomesError;
-    const loadingQuery = allIncomeLoading || usersIncomesLoading;
-    const fetchingQuery = allIncomeFetching || usersIncomeFetching;
-    const errorMessageQuery = allIncomeErrorMessage || usersIncomesErrorMessage;
+    const successQuery =
+        allIncomeSuccess || usersIncomesSuccess || incomeByDateRangeSuccess;
+    const errorQuery =
+        allIncomeError || usersIncomesError || incomeByDateRangeError;
+    const loadingQuery =
+        allIncomeLoading || usersIncomesLoading || incomeByDateRangeLoading;
+    const fetchingQuery =
+        allIncomeFetching || usersIncomeFetching || incomeByDateRangeFetching;
+    const errorMessageQuery =
+        allIncomeErrorMessage ||
+        usersIncomesErrorMessage ||
+        incomeByDateRangeErrorMessage;
 
     // mutation
-    const incomeSuccessMutation =
-        addIncomeSuccess || deleteIncomeSuccess || getIncomeByDateRangeSuccess;
-    const incomeLoadingMutation =
-        addIncomeLoading || deleteIncomeLoading || getIncomeByDateRangeLoading;
-    const errorMutation =
-        addIncomeError || deleteIncomeError || getIncomeByDateRangeError;
+    const incomeSuccessMutation = addIncomeSuccess || deleteIncomeSuccess;
+    const incomeLoadingMutation = addIncomeLoading || deleteIncomeLoading;
+    const errorMutation = addIncomeError || deleteIncomeError;
     const errorMessageMutation =
-        addIncomeErrorMessage ||
-        deleteIncomeErrorMessage ||
-        getIncomeByDateRangeErrorMessage;
+        addIncomeErrorMessage || deleteIncomeErrorMessage;
 
     // add mutation
     useEffect(() => {
@@ -171,7 +186,8 @@ export const useIncome = ({ userId = "" }: { userId?: string } = {}) => {
         deleteIncome,
         incomeLoadingMutation,
         incomeSuccessMutation,
-        getIncomeByDateRange,
+        incomeByDateRange,
+        refetchIncomeByDateRange,
         // Return the Snackbar component as part of the returned object
         SnackbarComponent: (
             <Snackbar

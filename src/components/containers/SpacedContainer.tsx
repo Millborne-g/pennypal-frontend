@@ -10,8 +10,12 @@ export const SpacedContainer = (props: {
             sx={{
                 display: "flex",
                 justifyContent: "space-between",
-                alignItems: "center",
+                alignItems: { sm: "center", xs: "flex-start" },
                 p: props.padding ? props.padding : 0,
+                flexDirection: {
+                    sm: "row",
+                    xs: "column",
+                },
             }}
         >
             {props.children}

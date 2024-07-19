@@ -62,11 +62,10 @@ export const expensesAPI = createApi({
             },
         }),
 
-        getExpenseByDateRange: builder.mutation({
-            query: (dateRange) => ({
-                url: "/expenses/date-range",
-                method: "POST",
-                body: dateRange,
+        getExpenseByDateRange: builder.query({
+            query: ({ userId, startDate, endDate }) => ({
+                url: `/expenses/date-range/${userId}/${startDate}/${endDate}`,
+                method: "GET",
             }),
         }),
     }),
@@ -78,5 +77,5 @@ export const {
     useGetExpensesByUserIdQuery,
     useAddExpenseMutation,
     useDeleteExpenseMutation,
-    useGetExpenseByDateRangeMutation
+    useGetExpenseByDateRangeQuery,
 } = expensesAPI;
