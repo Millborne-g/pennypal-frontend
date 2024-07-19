@@ -252,7 +252,7 @@ export const Dashboard = () => {
             setUsersIncomesData(incomeByDateRange);
         }
     }, [expensesByDateRange, incomeByDateRange]);
-    
+
     // fetch data
     useEffect(() => {
         if (usersExpensesData || usersIncomesData) {
@@ -328,8 +328,8 @@ export const Dashboard = () => {
                                 },
                                 mb: {
                                     sm: 0,
-                                    xs: 1
-                                }
+                                    xs: 1,
+                                },
                             }}
                         >
                             <DateRangePicker
@@ -344,6 +344,7 @@ export const Dashboard = () => {
                                 value={dateRange}
                                 onChange={async (dates) => {
                                     setDateRange(null);
+                                    setLoading(true);
                                     if (dates) {
                                         setStartDate(convertDate(dates[0]));
                                         setEndDate(convertDate(dates[1]));

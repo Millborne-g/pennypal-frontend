@@ -273,6 +273,7 @@ export const Income = () => {
                                 value={dateRange}
                                 onChange={async (dates) => {
                                     setDateRange(null);
+                                    setLoading(true);
                                     if (dates) {
                                         setStartDate(convertDate(dates[0]));
                                         setEndDate(convertDate(dates[1]));
