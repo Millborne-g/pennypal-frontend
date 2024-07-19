@@ -321,29 +321,17 @@ export const Dashboard = () => {
                         </Typography>
                         {/* time range */}
                         <Stack
-                            justifyContent={"flex-end"}
-                            alignItems="flex-end"
+                            sx={{
+                                alignItems: {
+                                    sm: "flex-end",
+                                    xs: "flex-start",
+                                },
+                                mb: {
+                                    sm: 0,
+                                    xs: 1
+                                }
+                            }}
                         >
-                            {/* <FormControl fullWidth>
-                                <InputLabel>Year</InputLabel>
-                                <Select
-                                    value={currentYear}
-                                    label="Year"
-                                    onChange={handleChange}
-                                    sx={{
-                                        bgcolor: "#FFF",
-                                    }}
-                                >
-                                    {yearList.map((year) => (
-                                        <MenuItem
-                                            key={year}
-                                            value={year.toString()}
-                                        >
-                                            {year}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl> */}
                             <DateRangePicker
                                 showOneCalendar
                                 size="lg"
