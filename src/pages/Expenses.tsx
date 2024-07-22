@@ -154,13 +154,6 @@ export const Expenses = () => {
         return `${year}-${month}-${day}`;
     };
 
-    const refreshAll = async () => {
-        await refetchExpensesByDateRange();
-        setStartDate(getStartDate());
-        setEndDate(getCurrentDate());
-        setDateRange([new Date(getStartDate()), new Date(getCurrentDate())]);
-    };
-
     const setData = () => {
         if (successQuery) {
             if (usersExpensesData) {
@@ -246,6 +239,12 @@ export const Expenses = () => {
         }
     }, [usersExpensesData, dateRange]);
 
+    useEffect(() => {
+        if (expensesByDateRange) {
+            refetchExpensesByDateRange();
+        }
+    }, []);
+
     return (
         <>
             <Box>
@@ -301,8 +300,8 @@ export const Expenses = () => {
                             p: "15px 0",
                             flexDirection: {
                                 sm: "row",
-                                xs: "column"
-                            }
+                                xs: "column",
+                            },
                         }}
                     >
                         <Box>
@@ -335,7 +334,15 @@ export const Expenses = () => {
                         <Stack justifyContent="center">
                             <Button
                                 variant="contained"
-                                onClick={() => setOpenModal(true)}
+                                onClick={() => {
+                                    setStartDate(getStartDate());
+                                    setEndDate(getCurrentDate());
+                                    setDateRange([
+                                        new Date(getStartDate()),
+                                        new Date(getCurrentDate()),
+                                    ]);
+                                    setOpenModal(true);
+                                }}
                             >
                                 Add Expense
                             </Button>
@@ -375,7 +382,7 @@ export const Expenses = () => {
                     setOpenModal={setOpenModal}
                     addBalExText={"Expense"}
                     addFunction={addExpense}
-                    refetch={refreshAll}
+                    refetch={() => refetchExpensesByDateRange()}
                 />
             )}
 

@@ -76,10 +76,8 @@ export const Dashboard = () => {
     const [endDate, setEndDate] = useState<string>("");
 
     const {
-        refetchUsersExpenses,
         successQuery: expensesSuccessQuery,
         loadingQuery: expensesLoadingQuery,
-        // fetchingQuery: expensesFetchingQuery,
         addExpense,
         expensesLoadingMutation,
         expensesByDateRange,
@@ -92,10 +90,8 @@ export const Dashboard = () => {
     });
 
     const {
-        refetchUsersIncomes,
         successQuery: incomeSuccessQuery,
         loadingQuery: incomeLoadingQuery,
-        // fetchingQuery: incomeFetchingQuery,
         addIncome,
         incomeLoadingMutation,
         incomeByDateRange,
@@ -231,6 +227,14 @@ export const Dashboard = () => {
         return `${year}-${month}-${day}`;
     };
 
+    const refreshAll = async () => {
+        if (addBalExText === "Expense") {
+            await refetchExpensesByDateRange();
+        } else {
+            await refetchIncomeByDateRange();
+        }
+    };
+
     // disable scroll
     useEffect(() => {
         if (expensesLoadingQuery && incomeLoadingQuery) {
@@ -306,8 +310,10 @@ export const Dashboard = () => {
     }, [windowWidth]);
 
     useEffect(() => {
-        refetchUsersExpenses();
-        refetchUsersIncomes();
+        if (expensesByDateRange || incomeByDateRange) {
+            refetchExpensesByDateRange();
+            refetchIncomeByDateRange();
+        }
     }, []);
 
     return (
@@ -393,6 +399,12 @@ export const Dashboard = () => {
                                         },
                                     }}
                                     onClick={() => {
+                                        setStartDate(getStartDate());
+                                        setEndDate(getCurrentDate());
+                                        setDateRange([
+                                            new Date(getStartDate()),
+                                            new Date(getCurrentDate()),
+                                        ]);
                                         setOpenModel(true);
                                         setAddBalExText("Income");
                                     }}
@@ -747,11 +759,7 @@ export const Dashboard = () => {
                     addFunction={
                         addBalExText === "Expense" ? addExpense : addIncome
                     }
-                    refetch={
-                        addBalExText === "Expense"
-                            ? refetchExpensesByDateRange
-                            : refetchIncomeByDateRange
-                    }
+                    refetch={() => refreshAll()}
                 />
             )}
 

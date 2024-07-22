@@ -150,13 +150,6 @@ export const Income = () => {
         return `${year}-${month}-${day}`;
     };
 
-    const refreshAll = async () => {
-        await refetchIncomeByDateRange();
-        setStartDate(getStartDate());
-        setEndDate(getCurrentDate());
-        setDateRange([new Date(getStartDate()), new Date(getCurrentDate())]);
-    };
-
     const setData = () => {
         if (successQuery) {
             if (usersIncomeData) {
@@ -242,6 +235,12 @@ export const Income = () => {
             setLoading(false);
         }
     }, [usersIncomeData]);
+
+    useEffect(() => {
+        if (incomeByDateRange) {
+            refetchIncomeByDateRange();
+        }
+    }, []);
 
     return (
         <>
@@ -332,7 +331,15 @@ export const Income = () => {
                         <Stack justifyContent="center">
                             <Button
                                 variant="contained"
-                                onClick={() => setOpenModal(true)}
+                                onClick={() => {
+                                    setStartDate(getStartDate());
+                                    setEndDate(getCurrentDate());
+                                    setDateRange([
+                                        new Date(getStartDate()),
+                                        new Date(getCurrentDate()),
+                                    ]);
+                                    setOpenModal(true);
+                                }}
                             >
                                 Add Income
                             </Button>
@@ -372,7 +379,7 @@ export const Income = () => {
                     setOpenModal={setOpenModal}
                     addBalExText={"Income"}
                     addFunction={addIncome}
-                    refetch={refreshAll}
+                    refetch={() => refetchIncomeByDateRange()}
                 />
             )}
 
