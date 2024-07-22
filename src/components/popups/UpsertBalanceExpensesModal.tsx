@@ -15,7 +15,7 @@ import IconButton from "@mui/material/IconButton";
 import LoadingButton from "@mui/lab/LoadingButton";
 
 // components
-import { ErrorSnackbar } from "../components/ErrorSnackbar";
+import { ErrorSnackbar } from "../ErrorSnackbar";
 import { useSelector } from "react-redux";
 
 const style = {

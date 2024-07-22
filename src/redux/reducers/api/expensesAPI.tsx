@@ -1,4 +1,4 @@
-import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 interface expenseData {
     _id: number | string;
@@ -61,13 +61,21 @@ export const expensesAPI = createApi({
                 return [{ type: "expenses", idExpense }];
             },
         }),
+
+        getExpenseByDateRange: builder.query({
+            query: ({ userId, startDate, endDate }) => ({
+                url: `/expenses/date-range/${userId}/${startDate}/${endDate}`,
+                method: "GET",
+            }),
+        }),
     }),
 });
 
 export const {
     useGetAllExpensesQuery,
-    useGetExpensesByYearQuery, 
+    useGetExpensesByYearQuery,
     useGetExpensesByUserIdQuery,
-    useAddExpenseMutation, 
-    useDeleteExpenseMutation
-} = expensesAPI
+    useAddExpenseMutation,
+    useDeleteExpenseMutation,
+    useGetExpenseByDateRangeQuery,
+} = expensesAPI;

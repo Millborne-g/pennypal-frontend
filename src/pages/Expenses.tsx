@@ -9,6 +9,7 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@mui/material/Button";
+import { Stack } from "@mui/material";
 
 // redux
 import { useDispatch, useSelector } from "react-redux";
@@ -20,18 +21,15 @@ import { openSidebar } from "../redux/reducers/sidebarSlice";
 import { useExpenses } from "../redux/hooks/use-expenses";
 
 // components
-import { UpsertBalanceExpensesModal } from "../components/UpsertBalanceExpensesModal";
+import { UpsertBalanceExpensesModal } from "../components/popups/UpsertBalanceExpensesModal";
 import { Loading } from "../components/Loading";
 import { SpacedContainer } from "../components/containers/SpacedContainer";
 import PageContainer from "../components/containers/PageContainer";
-import {
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Select,
-    SelectChangeEvent,
-    Stack,
-} from "@mui/material";
+import { MessagePopup } from "../components/popups/MessagePopup";
+
+// Date Range
+import { DateRangePicker } from "rsuite";
+import "rsuite/dist/rsuite-no-reset.min.css";
 
 interface ExpenseRow {
     id: number | string;
@@ -43,19 +41,27 @@ interface ExpenseRow {
 export const Expenses = () => {
     const userDetails = useSelector((state: any) => state.user.user);
 
+    const [dateRange, setDateRange] = useState<[Date, Date] | null>();
+    const [startDate, setStartDate] = useState<string>("");
+    const [endDate, setEndDate] = useState<string>("");
+
+    const [usersExpensesData, setUsersExpensesData] = useState<any[] | null>(
+        null
+    );
+
     const {
-        usersExpenses,
         loadingQuery,
         successQuery,
-        fetchingQuery,
-        expensesSuccessMutation,
         expensesLoadingMutation,
         addExpense,
         deleteExpense,
-        refetchUsersExpenses,
+        expensesByDateRange,
+        refetchExpensesByDateRange,
         SnackbarComponent,
     } = useExpenses({
         userId: userDetails._id,
+        startDate,
+        endDate,
     });
 
     const [rows, setRows] = useState<ExpenseRow[]>([]);
@@ -65,11 +71,10 @@ export const Expenses = () => {
     const dispatch = useDispatch();
     const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
-    const [currentYear, setCurrentYear] = useState("");
-
-    const [yearList, setYearList] = useState<number[]>([]);
     const [totalExpenses, setTotalExpenses] = useState(0);
-    // const [currentMonth, setCurrentMonth] = useState(0);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [openMessageModal, setOpenMessageModal] = useState(false);
+    const [idDelete, setIdDelete] = useState<any | null>(null);
 
     const columns = [
         {
@@ -111,8 +116,8 @@ export const Expenses = () => {
                 >
                     <IconButton
                         onClick={async () => {
-                            await deleteExpense(params.id);
-                            refetchUsersExpenses();
+                            setIdDelete(params.id);
+                            setOpenMessageModal(true);
                         }}
                     >
                         <DeleteIcon />
@@ -122,23 +127,69 @@ export const Expenses = () => {
         },
     ];
 
-    const months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-    ];
+    // const handleChange = (event: SelectChangeEvent) => {
+    //     setCurrentYear(event.target.value);
+    // };
 
-    const handleChange = (event: SelectChangeEvent) => {
-        setCurrentYear(event.target.value);
+    const getCurrentDate = () => {
+        const currentDate = new Date();
+        const year = currentDate.getFullYear();
+        const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+        const day = currentDate.getDate().toString().padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+    };
+
+    const getStartDate = () => {
+        const currentDate = new Date();
+        const year = currentDate.getFullYear();
+
+        return `${year}-01-01`;
+    };
+
+    const convertDate = (date: Date) => {
+        const dateTemp = new Date(date);
+        const year = dateTemp.getFullYear();
+        const month = (dateTemp.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-indexed
+        const day = dateTemp.getDate().toString().padStart(2, "0");
+
+        // Format the date as YYYY-MM-DD
+        return `${year}-${month}-${day}`;
+    };
+
+    const setData = () => {
+        if (successQuery) {
+            if (usersExpensesData) {
+                setRows([]);
+                setTotalExpenses(0);
+
+                for (let x = 0; x < usersExpensesData.length; x++) {
+                    let totalExpensesPerMonth = 0;
+                    totalExpensesPerMonth += usersExpensesData[x]
+                        .amount as number;
+                    const date = new Date(usersExpensesData[x].date);
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, "0");
+                    const day = String(date.getDate()).padStart(2, "0");
+                    const hours = String(date.getHours() % 12 || 12).padStart(
+                        2,
+                        "0"
+                    );
+                    const minutes = String(date.getMinutes()).padStart(2, "0");
+                    const ampm = date.getHours() >= 12 ? "PM" : "AM";
+                    setTotalExpenses(
+                        (prevAmount) => prevAmount + usersExpensesData[x].amount
+                    );
+                    let newData = {
+                        id: usersExpensesData[x]._id,
+                        category: usersExpensesData[x].category,
+                        date: `${year}-${month}-${day} ${hours}:${minutes} ${ampm}`,
+                        amount: usersExpensesData[x].amount,
+                    };
+                    setRows((prevDataset) => [...prevDataset, newData]);
+                }
+            }
+        }
     };
 
     // get the screen size
@@ -157,108 +208,24 @@ export const Expenses = () => {
     }, []); // Empty dependency array means this effect runs once after the initial render
 
     useEffect(() => {
+        setStartDate(getStartDate());
+        setEndDate(getCurrentDate());
+        setDateRange([new Date(getStartDate()), new Date(getCurrentDate())]);
+    }, []);
+
+    useEffect(() => {
+        if (expensesByDateRange) {
+            setUsersExpensesData(expensesByDateRange);
+        }
+    }, [expensesByDateRange]);
+
+    useEffect(() => {
         if (windowWidth < 1100) {
             dispatch(openSidebar(false));
         } else if (windowWidth > 1100) {
             dispatch(openSidebar(true));
         }
     }, [windowWidth]);
-
-    const setData = () => {
-        if (successQuery) {
-            if (usersExpenses) {
-                if (currentYear === "") {
-                    const thisYear = new Date().getFullYear();
-                    setCurrentYear(thisYear.toString());
-                }
-                // const thisMonth = new Date().getMonth();
-                // setCurrentMonth(thisMonth);
-                setRows([]);
-                setYearList([]);
-                setTotalExpenses(0);
-
-                // Extract unique years from allExpenses
-                let uniqueYearsExpenses = [
-                    ...new Set(
-                        usersExpenses.map((item: any) =>
-                            new Date(item.date).getFullYear()
-                        )
-                    ),
-                ];
-
-                // Combine unique years from both allIncome and allExpenses
-                let allUniqueYearsSet = new Set([...uniqueYearsExpenses]);
-
-                // Add the current year to the set if it doesn't exist
-                if (!allUniqueYearsSet.has(parseInt(currentYear))) {
-                    allUniqueYearsSet.add(parseInt(currentYear));
-                }
-
-                // Convert the set back to an array
-                let allUniqueYears: any = Array.from(allUniqueYearsSet);
-
-                setYearList(allUniqueYears);
-                for (let i = 0; i < months.length; i++) {
-                    let totalExpensesPerMonth = 0;
-                    for (let x = 0; x < usersExpenses.length; x++) {
-                        let dateString = usersExpenses[x].date;
-                        let dateObject = new Date(dateString);
-
-                        // Get the year and month
-                        let year = dateObject.getFullYear();
-                        let month = dateObject.toLocaleString("en-US", {
-                            month: "long",
-                        });
-                        if (currentYear === year.toString()) {
-                            if (months[i] === month) {
-                                totalExpensesPerMonth += usersExpenses[x]
-                                    .amount as number;
-                                const date = new Date(usersExpenses[x].date);
-                                const year = date.getFullYear();
-                                const month = String(
-                                    date.getMonth() + 1
-                                ).padStart(2, "0");
-                                const day = String(date.getDate()).padStart(
-                                    2,
-                                    "0"
-                                );
-                                const hours = String(
-                                    date.getHours() % 12 || 12
-                                ).padStart(2, "0");
-                                const minutes = String(
-                                    date.getMinutes()
-                                ).padStart(2, "0");
-                                const ampm =
-                                    date.getHours() >= 12 ? "PM" : "AM";
-                                setTotalExpenses(
-                                    (prevAmount) =>
-                                        prevAmount + usersExpenses[x].amount
-                                );
-                                let newData = {
-                                    id: usersExpenses[x]._id,
-                                    category: usersExpenses[x].category,
-                                    date: `${year}-${month}-${day} ${hours}:${minutes} ${ampm}`,
-                                    amount: usersExpenses[x].amount,
-                                };
-                                setRows((prevDataset) => [
-                                    ...prevDataset,
-                                    newData,
-                                ]);
-                            }
-                        }
-                    }
-
-                    // const newData = {
-                    //     income: totalIncomePerMonth,
-                    //     expenses: totalExpensesPerMonth,
-                    //     month: months[i],
-                    // };
-
-                    // setDataset((prevDataset) => [...prevDataset, newData]);
-                }
-            }
-        }
-    };
 
     useEffect(() => {
         if (loadingQuery) {
@@ -269,10 +236,17 @@ export const Expenses = () => {
     }, [loadingQuery]);
 
     useEffect(() => {
-        if (!fetchingQuery) {
+        if (usersExpensesData) {
             setData();
+            setLoading(false);
         }
-    }, [fetchingQuery, successQuery, expensesSuccessMutation, currentYear]);
+    }, [usersExpensesData, dateRange]);
+
+    useEffect(() => {
+        if (expensesByDateRange) {
+            refetchExpensesByDateRange();
+        }
+    }, []);
 
     return (
         <>
@@ -284,28 +258,42 @@ export const Expenses = () => {
                             Expenses
                         </Typography>
                         {/* time range */}
-                        <Box>
-                            <FormControl fullWidth>
-                                <InputLabel>Year</InputLabel>
-                                <Select
-                                    value={currentYear}
-                                    label="Year"
-                                    onChange={handleChange}
-                                    sx={{
-                                        bgcolor: "#FFF",
-                                    }}
-                                >
-                                    {yearList.map((year) => (
-                                        <MenuItem
-                                            key={year}
-                                            value={year.toString()}
-                                        >
-                                            {year}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </Box>
+                        <Stack
+                            sx={{
+                                alignItems: {
+                                    sm: "flex-end",
+                                    xs: "flex-start",
+                                },
+                            }}
+                        >
+                            <DateRangePicker
+                                showOneCalendar
+                                size="lg"
+                                format="MMM dd, yyyy"
+                                placeholder="Select Date Range"
+                                character=" to "
+                                style={{
+                                    width: "90%",
+                                }}
+                                value={dateRange}
+                                onChange={async (dates) => {
+                                    setDateRange(null);
+                                    setLoading(true);
+                                    if (dates) {
+                                        setStartDate(convertDate(dates[0]));
+                                        setEndDate(convertDate(dates[1]));
+                                        setDateRange(dates);
+                                    } else {
+                                        setStartDate(getStartDate());
+                                        setEndDate(getCurrentDate());
+                                        setDateRange([
+                                            new Date(getStartDate()),
+                                            new Date(getCurrentDate()),
+                                        ]);
+                                    }
+                                }}
+                            />
+                        </Stack>
                     </SpacedContainer>
                     <Divider />
                     <Box
@@ -313,6 +301,10 @@ export const Expenses = () => {
                             display: "flex",
                             justifyContent: "space-between",
                             p: "15px 0",
+                            flexDirection: {
+                                sm: "row",
+                                xs: "column",
+                            },
                         }}
                     >
                         <Box>
@@ -345,7 +337,15 @@ export const Expenses = () => {
                         <Stack justifyContent="center">
                             <Button
                                 variant="contained"
-                                onClick={() => setOpenModal(true)}
+                                onClick={() => {
+                                    setStartDate(getStartDate());
+                                    setEndDate(getCurrentDate());
+                                    setDateRange([
+                                        new Date(getStartDate()),
+                                        new Date(getCurrentDate()),
+                                    ]);
+                                    setOpenModal(true);
+                                }}
                             >
                                 Add Expense
                             </Button>
@@ -385,7 +385,7 @@ export const Expenses = () => {
                     setOpenModal={setOpenModal}
                     addBalExText={"Expense"}
                     addFunction={addExpense}
-                    refetch={refetchUsersExpenses}
+                    refetch={() => refetchExpensesByDateRange()}
                 />
             )}
 
@@ -393,7 +393,21 @@ export const Expenses = () => {
             {SnackbarComponent}
 
             {/* Loading */}
-            {(loadingQuery || expensesLoadingMutation) && <Loading />}
+            {(loading || expensesLoadingMutation) && <Loading />}
+
+            {openMessageModal && (
+                <MessagePopup
+                    content="
+                        Are you sure you want to delete this item?"
+                    closeAction={() => setOpenMessageModal(false)}
+                    rightBtnAction={async () => {
+                        await deleteExpense(idDelete);
+                        refetchExpensesByDateRange();
+                        setOpenMessageModal(false);
+                        setIdDelete(null);
+                    }}
+                />
+            )}
         </>
     );
 };
