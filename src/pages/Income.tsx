@@ -55,7 +55,6 @@ export const Income = () => {
         deleteIncome,
         incomeByDateRange,
         refetchIncomeByDateRange,
-        refetchUsersIncomes,
         SnackbarComponent,
     } = useIncome({
         userId: userDetails._id,
