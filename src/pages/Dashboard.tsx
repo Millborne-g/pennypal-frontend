@@ -504,6 +504,12 @@ export const Dashboard = () => {
                                         },
                                     }}
                                     onClick={() => {
+                                        setStartDate(getStartDate());
+                                        setEndDate(getCurrentDate());
+                                        setDateRange([
+                                            new Date(getStartDate()),
+                                            new Date(getCurrentDate()),
+                                        ]);
                                         setOpenModel(true);
                                         setAddBalExText("Expense");
                                     }}
