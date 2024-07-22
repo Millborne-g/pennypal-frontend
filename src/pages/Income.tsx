@@ -20,11 +20,12 @@ import { openSidebar } from "../redux/reducers/sidebarSlice";
 import { useIncome } from "../redux/hooks/use-income";
 
 // components
-import { UpsertBalanceExpensesModal } from "../components/UpsertBalanceExpensesModal";
+import { UpsertBalanceExpensesModal } from "../components/popups/UpsertBalanceExpensesModal";
 import { Loading } from "../components/Loading";
 import PageContainer from "../components/containers/PageContainer";
 import { Stack } from "@mui/material";
 import { SpacedContainer } from "../components/containers/SpacedContainer";
+import { MessagePopup } from "../components/popups/MessagePopup";
 
 // Date Range
 import { DateRangePicker } from "rsuite";
@@ -72,6 +73,8 @@ export const Income = () => {
     const [totalIncome, setTotalIncome] = useState(0);
 
     const [loading, setLoading] = useState<boolean>(true);
+    const [openMessageModal, setOpenMessageModal] = useState(false);
+    const [idDelete, setIdDelete] = useState<any | null>(null);
 
     const columns = [
         {
@@ -113,8 +116,8 @@ export const Income = () => {
                 >
                     <IconButton
                         onClick={async () => {
-                            await deleteIncome(params.id);
-                            refetchUsersIncomes();
+                            setIdDelete(params.id);
+                            setOpenMessageModal(true);
                         }}
                     >
                         <DeleteIcon />
@@ -388,6 +391,20 @@ export const Income = () => {
 
             {/* Loading */}
             {(loading || incomeLoadingMutation) && <Loading />}
+
+            {openMessageModal && (
+                <MessagePopup
+                    content="
+                        Are you sure you want to delete this item?"
+                    closeAction={() => setOpenMessageModal(false)}
+                    rightBtnAction={async () => {
+                        await deleteIncome(idDelete);
+                        refetchIncomeByDateRange();
+                        setOpenMessageModal(false);
+                        setIdDelete(null);
+                    }}
+                />
+            )}
         </>
     );
 };

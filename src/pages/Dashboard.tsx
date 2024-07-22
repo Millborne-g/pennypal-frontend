@@ -29,7 +29,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { Stack } from "@mui/material";
 
 // Components
-import { UpsertBalanceExpensesModal } from "../components/UpsertBalanceExpensesModal";
+import { UpsertBalanceExpensesModal } from "../components/popups/UpsertBalanceExpensesModal";
 import { SpacedContainer } from "../components/containers/SpacedContainer";
 import { Loading } from "../components/Loading";
 import PageContainer from "../components/containers/PageContainer";

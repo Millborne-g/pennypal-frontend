@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 // Mui
 import AppBar from "@mui/material/AppBar";
@@ -34,14 +34,18 @@ import { useDispatch, useSelector } from "react-redux";
 // Router
 import { useNavigate } from "react-router-dom";
 
+// components
+import { MessagePopup } from "./popups/MessagePopup";
+
 export const Header = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const userDetails = useSelector((state: any) => state.user.user);
     const userLogin = useSelector((state: any) => state.user.login);
     const sidebarState = useSelector((state: any) => state.sidebar);
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
+    const [openMessageModal, setOpenMessageModal] = useState(false);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -280,8 +284,7 @@ export const Header = () => {
                                     <Divider sx={{ width: 1 }} />
                                     <MenuItem
                                         onClick={() => {
-                                            dispatch(logoutUser());
-                                            navigate("/login");
+                                            setOpenMessageModal(true);
                                         }}
                                     >
                                         <ListItemIcon>
@@ -295,6 +298,18 @@ export const Header = () => {
                     </Toolbar>
                 </AppBar>
             </Box>
+            {openMessageModal && (
+                <MessagePopup
+                    content="
+                        Are you sure you want to logout?"
+                    closeAction={() => setOpenMessageModal(false)}
+                    rightBtnAction={() => {
+                        dispatch(logoutUser());
+                        navigate("/login");
+                    }}
+                    rightBtnText="Logout"
+                />
+            )}
         </>
     );
 };
