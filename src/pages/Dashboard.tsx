@@ -350,7 +350,6 @@ export const Dashboard = () => {
                                 value={dateRange}
                                 onChange={async (dates) => {
                                     setDateRange(null);
-                                    setLoading(true);
                                     if (dates) {
                                         setStartDate(convertDate(dates[0]));
                                         setEndDate(convertDate(dates[1]));
@@ -363,6 +362,8 @@ export const Dashboard = () => {
                                             new Date(getCurrentDate()),
                                         ]);
                                     }
+
+                                    setLoading(true);
                                 }}
                             />
                         </Stack>
