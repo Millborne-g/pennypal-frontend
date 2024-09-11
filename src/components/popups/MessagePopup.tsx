@@ -28,14 +28,14 @@ const style = {
 export const MessagePopup = ({
     closeAction,
     leftBtnText,
-    rightBtnAction,
+    leftBtnAction,
     rightBtnText,
     content,
     load,
 }: {
     closeAction: () => void;
     leftBtnText?: string;
-    rightBtnAction: () => void;
+    leftBtnAction: () => void;
     rightBtnText?: string;
     content: string;
     load?: boolean;
@@ -65,23 +65,23 @@ export const MessagePopup = ({
                         {content}
                     </Typography>
                     <Stack direction="row" spacing={2}>
+                        <LoadingButton
+                            fullWidth
+                            variant="contained"
+                            type="submit"
+                            loading={load}
+                            onClick={leftBtnAction}
+                        >
+                            {leftBtnText ? leftBtnText : "Yes"}
+                        </LoadingButton>
                         <Button
                             variant="outlined"
                             color="error"
                             fullWidth
                             onClick={closeAction}
                         >
-                            {leftBtnText ? leftBtnText : "No"}
+                            {rightBtnText ? rightBtnText : "No"}
                         </Button>
-                        <LoadingButton
-                            fullWidth
-                            variant="contained"
-                            type="submit"
-                            loading={load}
-                            onClick={rightBtnAction}
-                        >
-                            {rightBtnText ? rightBtnText : "Yes"}
-                        </LoadingButton>
                     </Stack>
                 </Box>
             </Modal>

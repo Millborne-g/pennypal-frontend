@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 // MUI
 import Box from "@mui/material/Box";
@@ -130,6 +131,8 @@ export const Login = () => {
                         email: email,
                         password: password,
                     }).unwrap();
+                    console.log(resultloginUser);
+                    Cookies.set("token", resultloginUser.token, { expires: 1 });
                     if (resultloginUser.user) {
                         dispatch(setUser(resultloginUser.user));
                     } else if (!resultloginUser.correctPassword) {

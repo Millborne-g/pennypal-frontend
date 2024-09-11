@@ -303,11 +303,10 @@ export const Header = () => {
                     content="
                         Are you sure you want to logout?"
                     closeAction={() => setOpenMessageModal(false)}
-                    rightBtnAction={() => {
+                    leftBtnAction={() => {
                         dispatch(logoutUser());
                         navigate("/login");
                     }}
-                    rightBtnText="Logout"
                 />
             )}
         </>
