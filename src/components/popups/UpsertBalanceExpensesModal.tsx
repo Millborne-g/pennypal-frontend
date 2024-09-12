@@ -137,7 +137,7 @@ export const UpsertBalanceExpensesModal = ({
                                     disabled={load}
                                 >
                                     <MenuItem value={"Income"}>Income</MenuItem>
-                                    <MenuItem value={"Other"}>Other</MenuItem>
+                                    <MenuItem value={"Others"}>Others</MenuItem>
                                 </Select>
                             </FormControl>
                         )}
