@@ -396,7 +396,7 @@ export const Income = () => {
                     content="
                         Are you sure you want to delete this item?"
                     closeAction={() => setOpenMessageModal(false)}
-                    rightBtnAction={async () => {
+                    leftBtnAction={async () => {
                         await deleteIncome(idDelete);
                         refetchIncomeByDateRange();
                         setOpenMessageModal(false);

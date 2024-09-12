@@ -400,7 +400,7 @@ export const Expenses = () => {
                     content="
                         Are you sure you want to delete this item?"
                     closeAction={() => setOpenMessageModal(false)}
-                    rightBtnAction={async () => {
+                    leftBtnAction={async () => {
                         await deleteExpense(idDelete);
                         refetchExpensesByDateRange();
                         setOpenMessageModal(false);
