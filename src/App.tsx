@@ -23,7 +23,7 @@ import { Header } from "./components/Header";
 import { useSelector, useDispatch } from "react-redux";
 
 // slices
-import { setUser, logoutUser } from "./redux/reducers/userSlice";
+import { logoutUser } from "./redux/reducers/userSlice";
 
 export const setCookieWithToken = (token: any) => {
     try {
@@ -46,7 +46,6 @@ export const setCookieWithToken = (token: any) => {
         // Set the cookie with the same expiration as the JWT
         Cookies.set("userToken", token, { expires: expiresInDays });
 
-        console.log(`Token will expire in ${expiresInSeconds} seconds`);
     } catch (error) {
         console.error("Error setting cookie: ", error);
     }
@@ -69,7 +68,6 @@ function App() {
     const loginState = useSelector((state: any) => state.user.login);
     const currentURL = window.location.pathname;
     const isHasToken = Cookies.get("userToken") !== undefined ? true : false;
-    const token = String(Cookies.get("userToken"));
 
     const dispatch = useDispatch();
     // const lightTheme = createTheme({
