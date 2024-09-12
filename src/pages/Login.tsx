@@ -73,8 +73,6 @@ export const Login = () => {
         null
     );
 
-    const [prevEmail, setPrevEmail] = useState<string>("false");
-
     const loginState = useSelector((state: any) => state.user.login);
     const userDetails = useSelector((state: any) => state.user.user);
     const [showPassword, setShowPassword] = useState(false);
@@ -159,12 +157,6 @@ export const Login = () => {
             navigate("/dashboard");
         }
     }, [loginState, userDetails]);
-
-    useEffect(() => {
-        if (userDoesntExist) {
-            setPrevEmail(email);
-        }
-    }, [userDoesntExist]);
 
     return (
         <>
