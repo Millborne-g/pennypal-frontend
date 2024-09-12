@@ -124,6 +124,7 @@ export const UpsertBalanceExpensesModal = ({
                                     <MenuItem value={"Bills"}>Bills</MenuItem>
                                     <MenuItem value={"Food"}>Food</MenuItem>
                                     <MenuItem value={"GF"}>GF</MenuItem>
+                                    <MenuItem value={"Others"}>Others</MenuItem>
                                 </Select>
                             </FormControl>
                         ) : (

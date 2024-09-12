@@ -145,7 +145,7 @@ export const useUser = ({
         if (errorMutation) {
             const fetchBaseQueryError =
                 errorMessageMutation as FetchBaseQueryError;
-            if (fetchBaseQueryError && fetchBaseQueryError.status === 404) {
+            if (fetchBaseQueryError && fetchBaseQueryError.status === 600) {
                 Swal.fire({
                     title: "Server Error",
                     text: "Error user actions! Please contact the dev team.",
