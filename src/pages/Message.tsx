@@ -68,7 +68,7 @@ export const Message = () => {
         usersMessages,
         addMessage,
         refetchMessages,
-        fetchingQuery: usersMessagesFetchingQuery,
+        // fetchingQuery: usersMessagesFetchingQuery,
         loadingMutation,
     } = useMessage({
         senderEmail: userDetails.email,
