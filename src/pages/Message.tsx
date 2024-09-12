@@ -155,10 +155,12 @@ export const Message = () => {
     };
 
     useEffect(() => {
-        socket.on("receiveMessage", () => {
-            refetchMessages();
-        });
-    }, [socket]);
+        if (usersMessages) {
+            socket.on("receiveMessage", () => {
+                refetchMessages();
+            });
+        }
+    }, [socket, usersMessages]);
 
     useEffect(() => {
         if (allUsers) {
@@ -323,6 +325,7 @@ export const Message = () => {
                                                         : ""
                                                 }
                                                 onClick={() => {
+                                                    setMessages([]);
                                                     setRecipient(user);
                                                 }}
                                             >
@@ -623,9 +626,10 @@ export const Message = () => {
                     </Grid>
                 </PageContainer>
             </Box>
-            {(usersMessagesFetchingQuery || allUsersFetchingQuery) && (
+            {/* {(usersMessagesFetchingQuery || allUsersFetchingQuery) && (
                 <Loading />
-            )}
+            )} */}
+            {allUsersFetchingQuery && <Loading />}
         </>
     );
 };
