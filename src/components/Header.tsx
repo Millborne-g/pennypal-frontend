@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import Cookies from "js-cookie";
+
 // Mui
 import AppBar from "@mui/material/AppBar";
 import IconButton from "@mui/material/IconButton";
@@ -305,6 +307,7 @@ export const Header = () => {
                     closeAction={() => setOpenMessageModal(false)}
                     leftBtnAction={() => {
                         dispatch(logoutUser());
+                        Cookies.remove("userToken");
                         navigate("/login");
                     }}
                 />

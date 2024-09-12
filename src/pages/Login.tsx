@@ -1,5 +1,8 @@
-import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
+
+// Cookie & JWT
+import { setCookieWithToken, decodeJWT } from "../App";
+
 // MUI
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -131,10 +134,11 @@ export const Login = () => {
                         email: email,
                         password: password,
                     }).unwrap();
-                    console.log(resultloginUser);
-                    Cookies.set("token", resultloginUser.token, { expires: 1 });
-                    if (resultloginUser.user) {
-                        dispatch(setUser(resultloginUser.user));
+                    if (resultloginUser.userToken) {
+                        setCookieWithToken(resultloginUser.userToken);
+                        dispatch(
+                            setUser(decodeJWT(resultloginUser.userToken).user)
+                        );
                     } else if (!resultloginUser.correctPassword) {
                         setFoundUser(!resultloginUser.correctPassword);
                     }

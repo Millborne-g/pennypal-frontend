@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import Cookies from "js-cookie";
 import "./App.css";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 
@@ -17,13 +18,60 @@ import { Message } from "./pages/Message";
 // components
 import { Sidebar } from "./components/Sidebar";
 import { Header } from "./components/Header";
+
 // redux
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+
+// slices
+import { setUser, logoutUser } from "./redux/reducers/userSlice";
+
+export const setCookieWithToken = (token: any) => {
+    try {
+        // Decode the JWT payload to extract the expiration time
+        const decodedToken = JSON.parse(atob(token.split(".")[1])); // Decode JWT payload (base64)
+
+        // Calculate the current time and expiration time (in seconds)
+        const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+        const expiresInSeconds = decodedToken.exp - currentTime; // Time left in seconds until the token expires
+
+        // If the token is already expired, do not set the cookie
+        if (expiresInSeconds <= 0) {
+            console.error("Token is already expired");
+            return;
+        }
+
+        // Convert seconds to days for Cookies.set method
+        const expiresInDays = expiresInSeconds / (60 * 60 * 24); // Convert seconds to days
+
+        // Set the cookie with the same expiration as the JWT
+        Cookies.set("userToken", token, { expires: expiresInDays });
+
+        console.log(`Token will expire in ${expiresInSeconds} seconds`);
+    } catch (error) {
+        console.error("Error setting cookie: ", error);
+    }
+};
+
+export const decodeJWT = (token: string) => {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+        atob(base64)
+            .split("")
+            .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+            .join("")
+    );
+
+    return JSON.parse(jsonPayload);
+};
 
 function App() {
     const loginState = useSelector((state: any) => state.user.login);
     const currentURL = window.location.pathname;
+    const isHasToken = Cookies.get("userToken") !== undefined ? true : false;
+    const token = String(Cookies.get("userToken"));
 
+    const dispatch = useDispatch();
     // const lightTheme = createTheme({
     //   palette: {
     //     mode: 'light',
@@ -46,6 +94,13 @@ function App() {
     //     },
     //   }
     // });
+
+    useEffect(() => {
+        if (!isHasToken) {
+            // let userData = decodeJWT(token);
+            dispatch(logoutUser());
+        }
+    }, [isHasToken]);
 
     useEffect(() => {
         if (currentURL === "/" && loginState) {
