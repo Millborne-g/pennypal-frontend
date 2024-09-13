@@ -87,7 +87,7 @@ export const Expenses = () => {
             headerName: "Category",
             flex: 1,
             editable: false,
-            minWidth: 200,
+            minWidth: 150,
         },
         {
             field: "amount",

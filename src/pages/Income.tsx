@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import { DataGrid } from "@mui/x-data-grid";
+import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 
 // redux
 import { useDispatch, useSelector } from "react-redux";
@@ -26,6 +27,7 @@ import PageContainer from "../components/containers/PageContainer";
 import { Stack } from "@mui/material";
 import { SpacedContainer } from "../components/containers/SpacedContainer";
 import { MessagePopup } from "../components/popups/MessagePopup";
+import { NotePopup } from "../components/popups/NotePopup";
 
 // Date Range
 import { DateRangePicker } from "rsuite";
@@ -75,12 +77,16 @@ export const Income = () => {
     const [openMessageModal, setOpenMessageModal] = useState(false);
     const [idDelete, setIdDelete] = useState<any | null>(null);
 
+    const [note, setNote] = useState("");
+    const [openNoteModal, setNoteModal] = useState(false);
+
     const columns = [
         {
             field: "category",
             headerName: "Category",
             flex: 1,
             editable: false,
+            minWidth: 150,
         },
         {
             field: "amount",
@@ -89,6 +95,7 @@ export const Income = () => {
             flex: 1,
             justifyContent: "flex-start",
             editable: false,
+            minWidth: 150,
             renderCell: (params: any) => (
                 <span style={{ textAlign: "start", paddingLeft: "16px" }}>
                     ₱ {params.value.toLocaleString()}
@@ -100,11 +107,58 @@ export const Income = () => {
             headerName: "Date",
             flex: 1,
             editable: false,
+            minWidth: 200,
+        },
+        {
+            field: "note",
+            headerName: "Note",
+            flex: 1,
+            justifyContent: "flex-start",
+            editable: false,
+            minWidth: 150,
+            renderCell: (params: any) => (
+                <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    width={1}
+                >
+                    <Typography
+                        sx={{
+                            textAlign: "start",
+                            fontStyle: "italic",
+                            maxWidth: 130,
+                        }}
+                        noWrap
+                    >
+                        {params.value}
+                    </Typography>
+                    {params.value !== "none" && (
+                        <Box>
+                            <IconButton
+                                sx={{ width: "20px", height: "20px" }}
+                                onClick={() => {
+                                    setNote(params.value);
+                                    setNoteModal(true);
+                                }}
+                            >
+                                <UnfoldMoreIcon
+                                    sx={{
+                                        fontSize: "15px",
+                                        transform: "rotate(45deg)",
+                                    }}
+                                />
+                            </IconButton>
+                        </Box>
+                    )}
+                </Stack>
+            ),
         },
         {
             field: "actions",
             flex: 1,
             headerName: "Actions",
+            minWidth: 150,
             renderCell: (params: any) => (
                 <Box
                     sx={{
@@ -180,6 +234,7 @@ export const Income = () => {
                         category: usersIncomeData[x].category,
                         date: `${year}-${month}-${day} ${hours}:${minutes} ${ampm}`,
                         amount: usersIncomeData[x].amount,
+                        note: usersIncomeData[x].note ?? "none",
                     };
                     setRows((prevDataset) => [...prevDataset, newData]);
                 }
@@ -404,6 +459,10 @@ export const Income = () => {
                         setIdDelete(null);
                     }}
                 />
+            )}
+
+            {openNoteModal && (
+                <NotePopup note={note} setOpenModal={setNoteModal} />
             )}
         </>
     );
