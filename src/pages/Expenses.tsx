@@ -215,6 +215,7 @@ export const Expenses = () => {
 
     useEffect(() => {
         if (expensesByDateRange) {
+            refetchExpensesByDateRange();
             setUsersExpensesData(expensesByDateRange);
         }
     }, [expensesByDateRange]);

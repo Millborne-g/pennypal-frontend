@@ -210,6 +210,7 @@ export const Income = () => {
 
     useEffect(() => {
         if (incomeByDateRange) {
+            refetchIncomeByDateRange();
             setUsersIncomeData(incomeByDateRange);
         }
     }, [incomeByDateRange]);
