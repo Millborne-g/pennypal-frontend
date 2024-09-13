@@ -10,6 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@mui/material/Button";
 import { Stack } from "@mui/material";
+import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 
 // redux
 import { useDispatch, useSelector } from "react-redux";
@@ -26,6 +27,7 @@ import { Loading } from "../components/Loading";
 import { SpacedContainer } from "../components/containers/SpacedContainer";
 import PageContainer from "../components/containers/PageContainer";
 import { MessagePopup } from "../components/popups/MessagePopup";
+import { NotePopup } from "../components/popups/NotePopup";
 
 // Date Range
 import { DateRangePicker } from "rsuite";
@@ -76,12 +78,16 @@ export const Expenses = () => {
     const [openMessageModal, setOpenMessageModal] = useState(false);
     const [idDelete, setIdDelete] = useState<any | null>(null);
 
+    const [note, setNote] = useState("");
+    const [openNoteModal, setNoteModal] = useState(false);
+
     const columns = [
         {
             field: "category",
             headerName: "Category",
             flex: 1,
             editable: false,
+            minWidth: 200,
         },
         {
             field: "amount",
@@ -90,6 +96,7 @@ export const Expenses = () => {
             flex: 1,
             justifyContent: "flex-start",
             editable: false,
+            minWidth: 150,
             renderCell: (params: any) => (
                 <span style={{ textAlign: "start", paddingLeft: "16px" }}>
                     ₱ {params.value.toLocaleString()}
@@ -101,11 +108,51 @@ export const Expenses = () => {
             headerName: "Date",
             flex: 1,
             editable: false,
+            minWidth: 200,
+        },
+        {
+            field: "note",
+            headerName: "Note",
+            flex: 1,
+            justifyContent: "flex-start",
+            editable: false,
+            minWidth: 150,
+            renderCell: (params: any) => (
+                <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    width={1}
+                >
+                    <Typography sx={{ textAlign: "start", fontStyle: "italic", maxWidth: 130 }} noWrap>
+                        {params.value}
+                    </Typography>
+                    {params.value !== "none" && (
+                        <Box>
+                            <IconButton
+                                sx={{ width: "20px", height: "20px" }}
+                                onClick={() => {
+                                    setNote(params.value);
+                                    setNoteModal(true);
+                                }}
+                            >
+                                <UnfoldMoreIcon
+                                    sx={{
+                                        fontSize: "15px",
+                                        transform: "rotate(45deg)",
+                                    }}
+                                />
+                            </IconButton>
+                        </Box>
+                    )}
+                </Stack>
+            ),
         },
         {
             field: "actions",
             flex: 1,
             headerName: "Actions",
+            minWidth: 150,
             renderCell: (params: any) => (
                 <Box
                     sx={{
@@ -184,8 +231,10 @@ export const Expenses = () => {
                         id: usersExpensesData[x]._id,
                         category: usersExpensesData[x].category,
                         date: `${year}-${month}-${day} ${hours}:${minutes} ${ampm}`,
+                        note: usersExpensesData[x].note ?? "none",
                         amount: usersExpensesData[x].amount,
                     };
+
                     setRows((prevDataset) => [...prevDataset, newData]);
                 }
             }
@@ -408,6 +457,10 @@ export const Expenses = () => {
                         setIdDelete(null);
                     }}
                 />
+            )}
+
+            {openNoteModal && (
+                <NotePopup note={note} setOpenModal={setNoteModal} />
             )}
         </>
     );
