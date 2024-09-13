@@ -54,6 +54,7 @@ export const UpsertBalanceExpensesModal = ({
     const [amountDisplay, setAmountDisplay] = useState<String>("");
 
     const [category, setCategory] = useState("");
+    const [note, setNote] = useState("");
 
     const [openErrorSnackBar, setOpenErrorSnackbar] = useState(false);
     const [snackbarText, setSnackbarText] = useState("");
@@ -137,9 +138,20 @@ export const UpsertBalanceExpensesModal = ({
                                     disabled={load}
                                 >
                                     <MenuItem value={"Income"}>Income</MenuItem>
-                                    <MenuItem value={"Other"}>Other</MenuItem>
+                                    <MenuItem value={"Others"}>Others</MenuItem>
                                 </Select>
                             </FormControl>
+                        )}
+
+                        {category === "Others" && (
+                            <TextField
+                                label="Note"
+                                fullWidth
+                                sx={{ mb: 3 }}
+                                value={note}
+                                disabled={load}
+                                onChange={(e) => {setNote(e.target.value)}}
+                            />
                         )}
 
                         <TextField
