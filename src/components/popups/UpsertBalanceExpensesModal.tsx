@@ -18,7 +18,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { ErrorSnackbar } from "../ErrorSnackbar";
 import { useSelector } from "react-redux";
 
-const style = {
+export const style = {
     position: "absolute" as "absolute",
     top: "50%",
     left: "50%",
@@ -54,6 +54,7 @@ export const UpsertBalanceExpensesModal = ({
     const [amountDisplay, setAmountDisplay] = useState<String>("");
 
     const [category, setCategory] = useState("");
+    const [note, setNote] = useState("");
 
     const [openErrorSnackBar, setOpenErrorSnackbar] = useState(false);
     const [snackbarText, setSnackbarText] = useState("");
@@ -71,6 +72,7 @@ export const UpsertBalanceExpensesModal = ({
                 category: category,
                 amount: amount,
                 user: userDetails._id,
+                ...(note !== "" && { note: note }),
             };
             // console.log("aaaaaaaaaaaah");
             setLoad(true);
@@ -141,6 +143,22 @@ export const UpsertBalanceExpensesModal = ({
                                 </Select>
                             </FormControl>
                         )}
+
+                        {category === "Others" && (
+                            <TextField
+                                label="Note (optional)"
+                                fullWidth
+                                multiline
+                                rows={4}
+                                sx={{ mb: 3 }}
+                                value={note}
+                                disabled={load}
+                                onChange={(e) => {
+                                    setNote(e.target.value);
+                                }}
+                            />
+                        )}
+                        {/* <TextareaAutosize/> */}
 
                         <TextField
                             label="Enter the Amount"
