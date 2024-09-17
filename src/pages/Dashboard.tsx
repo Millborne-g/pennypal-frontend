@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-interface exbalDataType {
+export interface exbalDataType {
     income: number;
     expenses: number;
     month: string;
@@ -33,6 +33,8 @@ import { UpsertBalanceExpensesModal } from "../components/popups/UpsertBalanceEx
 import { SpacedContainer } from "../components/containers/SpacedContainer";
 import { Loading } from "../components/Loading";
 import PageContainer from "../components/containers/PageContainer";
+
+import { LineChart } from "../components/charts/LineChart";
 
 // redux
 import { useDispatch, useSelector } from "react-redux";
@@ -103,7 +105,11 @@ export const Dashboard = () => {
         endDate,
     });
 
-    const [dataset, setDataset] = useState<exbalDataType[]>([
+    
+
+    const [datasetMonthlyList, setDatasettMonthlyList] = useState<
+        exbalDataType[]
+    >([
         {
             income: 0,
             expenses: 0,
@@ -146,7 +152,7 @@ export const Dashboard = () => {
             if (usersExpensesData && usersIncomesData) {
                 const thisMonth = new Date().getMonth();
                 setCurrentMonth(thisMonth);
-                setDataset([]);
+                setDatasettMonthlyList([]);
                 setTotalExpenses(0);
                 setTotalIncome(0);
 
@@ -195,7 +201,10 @@ export const Dashboard = () => {
                         month: months[i],
                     };
 
-                    setDataset((prevDataset) => [...prevDataset, newData]);
+                    setDatasettMonthlyList((prevDataset) => [
+                        ...prevDataset,
+                        newData,
+                    ]);
                 }
             }
         }
@@ -266,18 +275,18 @@ export const Dashboard = () => {
     }, [usersExpensesData, usersIncomesData, dateRange]);
 
     useEffect(() => {
-        if (dataset) {
-            for (let i = 0; i < dataset.length; i++) {
-                if (months[currentMonth] === dataset[i].month) {
+        if (datasetMonthlyList) {
+            for (let i = 0; i < datasetMonthlyList.length; i++) {
+                if (months[currentMonth] === datasetMonthlyList[i].month) {
                     let updatedDataset = [
-                        dataset[i],
+                        datasetMonthlyList[i],
                         ...datasetMonthly.slice(1),
                     ];
                     setDatasetMonthly(updatedDataset);
                 }
             }
         }
-    }, [currentMonth, dataset]);
+    }, [currentMonth, datasetMonthlyList]);
 
     // useEffect(() => {
     //     if (currentYear !== "") {
@@ -684,7 +693,7 @@ export const Dashboard = () => {
                             border: "1px solid #DFDFDF",
                         }}
                     >
-                        <Box
+                        {/* <Box
                             sx={{
                                 display: "flex",
                                 justifyContent: "space-between",
@@ -725,8 +734,8 @@ export const Dashboard = () => {
                                     <KeyboardArrowRightIcon />
                                 </IconButton>
                             </Box>
-                        </Box>
-                        {dataset && (
+                        </Box> */}
+                        {/* {dataset && (
                             <BarChart
                                 dataset={datasetMonthly}
                                 xAxis={[
@@ -752,6 +761,13 @@ export const Dashboard = () => {
                                     width: "100%",
                                 }}
                                 colors={["#53B16B", "#FF6668"]}
+                            />
+                        )} */}
+                        {datasetMonthlyList && (
+                            <LineChart
+                                dataset={datasetMonthlyList}
+                                startDate={startDate}
+                                endDate={endDate}
                             />
                         )}
                     </Box>
