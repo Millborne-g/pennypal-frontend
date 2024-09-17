@@ -9,7 +9,7 @@ import { Box, Toolbar } from "@mui/material";
 
 const drawerWidth = 240;
 
-const PageContainer = (props: {children: ReactNode}) => {
+const PageContainer = (props: {children: ReactNode, height?: string}) => {
     const sidebarState = useSelector((state: any) => state.sidebar);
 
     const open = sidebarState.open;
@@ -32,10 +32,10 @@ const PageContainer = (props: {children: ReactNode}) => {
     };
 
     return (
-        <>
+        <Box height={props.height ?? "auto"}>
             <Toolbar />
             <Box sx={dashboardStyle}>{props.children}</Box>
-        </>
+        </Box>
     );
 };
 

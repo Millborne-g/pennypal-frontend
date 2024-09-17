@@ -14,6 +14,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { Expenses } from "./pages/Expenses";
 import { Income } from "./pages/Income";
 import { Message } from "./pages/Message";
+import { Plan } from "./pages/Plan";
 
 // components
 import { Sidebar } from "./components/Sidebar";
@@ -45,7 +46,6 @@ export const setCookieWithToken = (token: any) => {
 
         // Set the cookie with the same expiration as the JWT
         Cookies.set("userToken", token, { expires: expiresInDays });
-
     } catch (error) {
         console.error("Error setting cookie: ", error);
     }
@@ -176,6 +176,13 @@ function App() {
                         path="/message"
                         element={
                             loginState ? <Message /> : <Navigate to="/login" />
+                        }
+                    />
+
+                    <Route
+                        path="/plan"
+                        element={
+                            loginState ? <Plan /> : <Navigate to="/login" />
                         }
                     />
                     <Route path="*" element={<Navigate to="/" />} />

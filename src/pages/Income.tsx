@@ -403,7 +403,7 @@ export const Income = () => {
                             </Button>
                         </Stack>
                     </Box>
-                    <Box sx={{ height: "500px" }}>
+                    <Box sx={{ height: "100%" }}>
                         <Box
                             sx={{
                                 width: "100%",
