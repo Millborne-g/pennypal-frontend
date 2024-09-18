@@ -144,20 +144,18 @@ export const UpsertBalanceExpensesModal = ({
                             </FormControl>
                         )}
 
-                        {category === "Others" && (
-                            <TextField
-                                label="Note (optional)"
-                                fullWidth
-                                multiline
-                                rows={4}
-                                sx={{ mb: 3 }}
-                                value={note}
-                                disabled={load}
-                                onChange={(e) => {
-                                    setNote(e.target.value);
-                                }}
-                            />
-                        )}
+                        <TextField
+                            label="Note (optional)"
+                            fullWidth
+                            multiline
+                            rows={4}
+                            sx={{ mb: 3 }}
+                            value={note}
+                            disabled={load}
+                            onChange={(e) => {
+                                setNote(e.target.value);
+                            }}
+                        />
                         {/* <TextareaAutosize/> */}
 
                         <TextField

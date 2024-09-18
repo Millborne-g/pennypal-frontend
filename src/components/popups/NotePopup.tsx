@@ -31,7 +31,7 @@ export const NotePopup = ({
                 </Typography>
                 <Box>
                     <TextField
-                        label="Note (optional)"
+                        label="Note"
                         fullWidth
                         multiline
                         rows={5}
