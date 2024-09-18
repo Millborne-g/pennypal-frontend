@@ -16,7 +16,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import PaidIcon from "@mui/icons-material/Paid";
 import WalletIcon from "@mui/icons-material/Wallet";
 import MessageIcon from "@mui/icons-material/Message";
-// import RuleIcon from "@mui/icons-material/Rule";
+import RuleIcon from "@mui/icons-material/Rule";
 import { useTheme } from "@mui/material/styles";
 
 // redux
@@ -42,11 +42,11 @@ const menu = [
         name: "Income",
         icon: <WalletIcon />,
     },
-    // {
-    //     path: "/plan",
-    //     name: "Plan Budget",
-    //     icon: <RuleIcon />,
-    // },
+    {
+        path: "/plan",
+        name: "Plan Budget",
+        icon: <RuleIcon />,
+    },
     {
         path: "/message",
         name: "Message",
