@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-interface exbalDataType {
+export interface exbalDataType {
     income: number;
     expenses: number;
     month: string;
@@ -14,7 +14,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
-import { BarChart } from "@mui/x-charts/BarChart";
+// import { BarChart } from "@mui/x-charts/BarChart";
 import WalletIcon from "@mui/icons-material/Wallet";
 import PaidIcon from "@mui/icons-material/Paid";
 // import InputLabel from "@mui/material/InputLabel";
@@ -22,8 +22,8 @@ import PaidIcon from "@mui/icons-material/Paid";
 // import FormControl from "@mui/material/FormControl";
 // import Select, { SelectChangeEvent } from "@mui/material/Select";
 import IconButton from "@mui/material/IconButton";
-import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+// import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
+// import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import SavingsIcon from "@mui/icons-material/Savings";
 import AddIcon from "@mui/icons-material/Add";
 import { Stack } from "@mui/material";
@@ -33,6 +33,8 @@ import { UpsertBalanceExpensesModal } from "../components/popups/UpsertBalanceEx
 import { SpacedContainer } from "../components/containers/SpacedContainer";
 import { Loading } from "../components/Loading";
 import PageContainer from "../components/containers/PageContainer";
+
+import { LineChart } from "../components/charts/LineChart";
 
 // redux
 import { useDispatch, useSelector } from "react-redux";
@@ -48,10 +50,10 @@ import { useIncome } from "../redux/hooks/use-income";
 import { DateRangePicker } from "rsuite";
 import "rsuite/dist/rsuite-no-reset.min.css";
 
-const valueFormatter = (value: number) => {
-    const formattedValue = value.toLocaleString();
-    return `${formattedValue}php`;
-};
+// const valueFormatter = (value: number) => {
+//     const formattedValue = value.toLocaleString();
+//     return `${formattedValue}php`;
+// };
 
 export const Dashboard = () => {
     const userDetails = useSelector((state: any) => state.user.user);
@@ -103,7 +105,9 @@ export const Dashboard = () => {
         endDate,
     });
 
-    const [dataset, setDataset] = useState<exbalDataType[]>([
+    const [datasetMonthlyList, setDatasettMonthlyList] = useState<
+        exbalDataType[]
+    >([
         {
             income: 0,
             expenses: 0,
@@ -146,7 +150,7 @@ export const Dashboard = () => {
             if (usersExpensesData && usersIncomesData) {
                 const thisMonth = new Date().getMonth();
                 setCurrentMonth(thisMonth);
-                setDataset([]);
+                setDatasettMonthlyList([]);
                 setTotalExpenses(0);
                 setTotalIncome(0);
 
@@ -195,7 +199,10 @@ export const Dashboard = () => {
                         month: months[i],
                     };
 
-                    setDataset((prevDataset) => [...prevDataset, newData]);
+                    setDatasettMonthlyList((prevDataset) => [
+                        ...prevDataset,
+                        newData,
+                    ]);
                 }
             }
         }
@@ -266,18 +273,18 @@ export const Dashboard = () => {
     }, [usersExpensesData, usersIncomesData, dateRange]);
 
     useEffect(() => {
-        if (dataset) {
-            for (let i = 0; i < dataset.length; i++) {
-                if (months[currentMonth] === dataset[i].month) {
+        if (datasetMonthlyList) {
+            for (let i = 0; i < datasetMonthlyList.length; i++) {
+                if (months[currentMonth] === datasetMonthlyList[i].month) {
                     let updatedDataset = [
-                        dataset[i],
+                        datasetMonthlyList[i],
                         ...datasetMonthly.slice(1),
                     ];
                     setDatasetMonthly(updatedDataset);
                 }
             }
         }
-    }, [currentMonth, dataset]);
+    }, [currentMonth, datasetMonthlyList]);
 
     // useEffect(() => {
     //     if (currentYear !== "") {
@@ -684,7 +691,7 @@ export const Dashboard = () => {
                             border: "1px solid #DFDFDF",
                         }}
                     >
-                        <Box
+                        {/* <Box
                             sx={{
                                 display: "flex",
                                 justifyContent: "space-between",
@@ -725,8 +732,8 @@ export const Dashboard = () => {
                                     <KeyboardArrowRightIcon />
                                 </IconButton>
                             </Box>
-                        </Box>
-                        {dataset && (
+                        </Box> */}
+                        {/* {dataset && (
                             <BarChart
                                 dataset={datasetMonthly}
                                 xAxis={[
@@ -752,6 +759,15 @@ export const Dashboard = () => {
                                     width: "100%",
                                 }}
                                 colors={["#53B16B", "#FF6668"]}
+                            />
+                        )} */}
+                        {datasetMonthlyList && (
+                            <LineChart
+                                dataset={datasetMonthlyList}
+                                startDate={startDate}
+                                endDate={endDate}
+                                expenseData={expensesByDateRange}
+                                incomeData={incomeByDateRange}
                             />
                         )}
                     </Box>

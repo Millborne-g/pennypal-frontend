@@ -187,7 +187,7 @@ export const Message = () => {
         <>
             <Box sx={{ height: "100vh" }}>
                 <CssBaseline />
-                <PageContainer>
+                <PageContainer height="100%">
                     <SpacedContainer>
                         <Typography fontSize={30} fontWeight={700} gutterBottom>
                             Message
