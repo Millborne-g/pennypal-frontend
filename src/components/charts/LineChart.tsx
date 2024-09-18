@@ -12,7 +12,14 @@ import {
     Legend,
     Filler,
 } from "chart.js";
-import { Box, Select, MenuItem } from "@mui/material";
+import {
+    // Box,
+    // Select,
+    // MenuItem,
+    Stack,
+    ButtonGroup,
+    Button,
+} from "@mui/material";
 
 // Register the necessary Chart.js components
 ChartJS.register(
@@ -138,9 +145,11 @@ export const LineChart = (props: {
 
     useEffect(() => {
         if (props.expenseData && props.incomeData) {
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
             const startDate = props.startDate
                 ? new Date(props.startDate)
-                : new Date("2024-01-01");
+                : new Date(`${year}-01-01`);
             const endDate = props.endDate
                 ? new Date(props.endDate)
                 : new Date();
@@ -216,7 +225,7 @@ export const LineChart = (props: {
         plugins: {
             title: {
                 display: true,
-                text: "Income - Expense (Monthly)",
+                text: "Income - Expense",
             },
         },
         scales: {
@@ -240,17 +249,74 @@ export const LineChart = (props: {
     };
 
     return (
-        <Box height={400} position={"relative"}>
-            <Select
-                size="small"
-                value={view}
-                onChange={(e) => setView(e.target.value as "month" | "day")}
-                sx={{ position: "absolute", right: 0 }}
+        <Stack height={400} gap={0.5} position={"relative"}>
+            <Stack
+                sx={{
+                    height: "120%",
+                    maxHeight: { sm: "100%", xs: 370 },
+                }}
             >
-                <MenuItem value="month">Per Month</MenuItem>
-                <MenuItem value="day">Per Day</MenuItem>
-            </Select>
-            <Line data={data} options={options} />
-        </Box>
+                <Line
+                    data={data}
+                    options={options}
+                    style={{ height: "100%", width: "100%" }}
+                />
+            </Stack>
+            <Stack
+                alignItems={"center"}
+                sx={{ position: { sm: "absolute" }, right: 0, top: 0 }}
+            >
+                {/* <Select
+                    size="small"
+                    value={view}
+                    onChange={(e) => setView(e.target.value as "month" | "day")}
+                >
+                    <MenuItem value="month">Per Month</MenuItem>
+                    <MenuItem value="day">Per Day</MenuItem>
+                </Select> */}
+                <ButtonGroup
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                        bgcolor: "#f0f0f0",
+                        width: "fit-content",
+                    }}
+                >
+                    <Button
+                        {...(view === "month" && { variant: "contained" })}
+                        sx={{
+                            bgcolor:
+                                view === "month" ? "#ffffff" : "transparent",
+                            border: "none",
+                            color: "#000000",
+                            textTransform: "none",
+                            "&:hover": {
+                                bgcolor: "#f3f3f3",
+                                border: "none",
+                            },
+                        }}
+                        onClick={() => setView("month")}
+                    >
+                        Monthly
+                    </Button>
+                    <Button
+                        {...(view === "day" && { variant: "contained" })}
+                        sx={{
+                            bgcolor: view === "day" ? "#ffffff" : "transparent",
+                            border: "none",
+                            color: "#000000",
+                            textTransform: "none",
+                            "&:hover": {
+                                bgcolor: "#f3f3f3",
+                                border: "none",
+                            },
+                        }}
+                        onClick={() => setView("day")}
+                    >
+                        Daily
+                    </Button>
+                </ButtonGroup>
+            </Stack>
+        </Stack>
     );
 };
