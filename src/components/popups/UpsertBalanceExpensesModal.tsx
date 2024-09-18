@@ -14,9 +14,15 @@ import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 import LoadingButton from "@mui/lab/LoadingButton";
 
+// import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+
 // components
 import { ErrorSnackbar } from "../ErrorSnackbar";
 import { useSelector } from "react-redux";
+import { Stack } from "@mui/material";
 
 export const style = {
     position: "absolute" as "absolute",
@@ -32,6 +38,8 @@ export const style = {
     borderRadius: "5px",
     boxShadow: 24,
     p: 4,
+    maxHeight: "90vh",
+    overflow: "auto"
 };
 
 export const UpsertBalanceExpensesModal = ({
@@ -111,97 +119,117 @@ export const UpsertBalanceExpensesModal = ({
                         Add {addBalExText}
                     </Typography>
                     <form onSubmit={(e) => submitAmount(e)}>
-                        {addBalExText === "Expense" ? (
-                            <FormControl fullWidth sx={{ mb: 3 }}>
-                                <InputLabel>Category</InputLabel>
-                                <Select
-                                    value={category}
-                                    label="Cathegory"
-                                    onChange={handleChange}
-                                    disabled={load}
-                                >
-                                    <MenuItem value={"Transportation"}>
-                                        Transportation
-                                    </MenuItem>
-                                    <MenuItem value={"Bills"}>Bills</MenuItem>
-                                    <MenuItem value={"Food"}>Food</MenuItem>
-                                    <MenuItem value={"GF"}>GF</MenuItem>
-                                    <MenuItem value={"Others"}>Others</MenuItem>
-                                </Select>
-                            </FormControl>
-                        ) : (
-                            <FormControl fullWidth sx={{ mb: 3 }}>
-                                <InputLabel>Category</InputLabel>
-                                <Select
-                                    value={category}
-                                    label="Cathegory"
-                                    onChange={handleChange}
-                                    disabled={load}
-                                >
-                                    <MenuItem value={"Income"}>Income</MenuItem>
-                                    <MenuItem value={"Others"}>Others</MenuItem>
-                                </Select>
-                            </FormControl>
-                        )}
+                        <Stack gap={2}>
+                            {addBalExText === "Expense" ? (
+                                <FormControl fullWidth >
+                                    <InputLabel>Category</InputLabel>
+                                    <Select
+                                        value={category}
+                                        label="Cathegory"
+                                        onChange={handleChange}
+                                        disabled={load}
+                                    >
+                                        <MenuItem value={"Transportation"}>
+                                            Transportation
+                                        </MenuItem>
+                                        <MenuItem value={"Bills"}>
+                                            Bills
+                                        </MenuItem>
+                                        <MenuItem value={"Food"}>Food</MenuItem>
+                                        <MenuItem value={"GF"}>GF</MenuItem>
+                                        <MenuItem value={"Others"}>
+                                            Others
+                                        </MenuItem>
+                                    </Select>
+                                </FormControl>
+                            ) : (
+                                <FormControl fullWidth>
+                                    <InputLabel>Category</InputLabel>
+                                    <Select
+                                        value={category}
+                                        label="Cathegory"
+                                        onChange={handleChange}
+                                        disabled={load}
+                                    >
+                                        <MenuItem value={"Income"}>
+                                            Income
+                                        </MenuItem>
+                                        <MenuItem value={"Others"}>
+                                            Others
+                                        </MenuItem>
+                                    </Select>
+                                </FormControl>
+                            )}
 
-                        <TextField
-                            label="Note (optional)"
-                            fullWidth
-                            multiline
-                            rows={4}
-                            sx={{ mb: 3 }}
-                            value={note}
-                            disabled={load}
-                            onChange={(e) => {
-                                setNote(e.target.value);
-                            }}
-                        />
-                        {/* <TextareaAutosize/> */}
+                            <TextField
+                                label="Note (optional)"
+                                fullWidth
+                                multiline
+                                rows={4}
+                                value={note}
+                                disabled={load}
+                                onChange={(e) => {
+                                    setNote(e.target.value);
+                                }}
+                            />
+                            {/* <TextareaAutosize/> */}
 
-                        <TextField
-                            label="Enter the Amount"
-                            fullWidth
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        Php
-                                    </InputAdornment>
-                                ),
-                            }}
-                            sx={{ mb: 2 }}
-                            value={amountDisplay}
-                            disabled={load}
-                            onChange={(e) => {
-                                let value: any = e.target.value;
-                                if (value === "") {
-                                    setAmount(0);
-                                    setAmountDisplay("");
-                                } else {
-                                    const parsedValue = parseFloat(value);
-                                    // Check if the parsed value is a valid number
-                                    if (!isNaN(parsedValue)) {
-                                        setAmount(parsedValue);
-                                        setAmountDisplay(value);
-                                        if (
-                                            parsedValue % 1 !== 0 ||
-                                            value % 1 !== 0
-                                        ) {
-                                            setAmountDisplay(
-                                                parsedValue.toString()
-                                            );
+                            {/* <Stack>
+                                <LocalizationProvider
+                                    dateAdapter={AdapterDayjs}
+                                >
+                                    <DemoContainer components={["DatePicker"]} sx={{
+                                        padding: 0
+                                    }}>
+                                        <DatePicker label="Basic date picker" />
+                                    </DemoContainer>
+                                </LocalizationProvider>
+                            </Stack> */}
+
+                            <TextField
+                                label="Enter the Amount"
+                                fullWidth
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            Php
+                                        </InputAdornment>
+                                    ),
+                                }}
+                                value={amountDisplay}
+                                disabled={load}
+                                onChange={(e) => {
+                                    let value: any = e.target.value;
+                                    if (value === "") {
+                                        setAmount(0);
+                                        setAmountDisplay("");
+                                    } else {
+                                        const parsedValue = parseFloat(value);
+                                        // Check if the parsed value is a valid number
+                                        if (!isNaN(parsedValue)) {
+                                            setAmount(parsedValue);
+                                            setAmountDisplay(value);
+                                            if (
+                                                parsedValue % 1 !== 0 ||
+                                                value % 1 !== 0
+                                            ) {
+                                                setAmountDisplay(
+                                                    parsedValue.toString()
+                                                );
+                                            }
                                         }
                                     }
-                                }
-                            }}
-                        />
-                        <LoadingButton
-                            fullWidth
-                            variant="contained"
-                            type="submit"
-                            loading={load}
-                        >
-                            Save
-                        </LoadingButton>
+                                }}
+                            />
+                            <LoadingButton
+                                fullWidth
+                                variant="contained"
+                                type="submit"
+                                loading={load}
+                            >
+                                Save
+                            </LoadingButton>
+                        </Stack>
                     </form>
                 </Box>
             </Modal>
