@@ -14,10 +14,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 import LoadingButton from "@mui/lab/LoadingButton";
 
-// import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+// date picker
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs, { Dayjs } from "dayjs";
 
 // components
 import { ErrorSnackbar } from "../ErrorSnackbar";
@@ -39,7 +41,7 @@ export const style = {
     boxShadow: 24,
     p: 4,
     maxHeight: "90vh",
-    overflow: "auto"
+    overflow: "auto",
 };
 
 export const UpsertBalanceExpensesModal = ({
@@ -66,6 +68,8 @@ export const UpsertBalanceExpensesModal = ({
 
     const [openErrorSnackBar, setOpenErrorSnackbar] = useState(false);
     const [snackbarText, setSnackbarText] = useState("");
+
+    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());    
 
     const [load, setLoad] = useState<boolean>(false);
 
@@ -121,7 +125,7 @@ export const UpsertBalanceExpensesModal = ({
                     <form onSubmit={(e) => submitAmount(e)}>
                         <Stack gap={2}>
                             {addBalExText === "Expense" ? (
-                                <FormControl fullWidth >
+                                <FormControl fullWidth>
                                     <InputLabel>Category</InputLabel>
                                     <Select
                                         value={category}
@@ -172,19 +176,25 @@ export const UpsertBalanceExpensesModal = ({
                                     setNote(e.target.value);
                                 }}
                             />
-                            {/* <TextareaAutosize/> */}
 
-                            {/* <Stack>
+                            <Stack>
                                 <LocalizationProvider
                                     dateAdapter={AdapterDayjs}
                                 >
-                                    <DemoContainer components={["DatePicker"]} sx={{
-                                        padding: 0
-                                    }}>
-                                        <DatePicker label="Basic date picker" />
+                                    <DemoContainer
+                                        components={["DatePicker"]}
+                                        sx={{ mt: -1 }}
+                                    >
+                                        <DatePicker
+                                            label="Basic date picker"
+                                            value={selectedDate}
+                                            onChange={(newValue) =>
+                                                setSelectedDate(newValue)
+                                            }
+                                        />
                                     </DemoContainer>
                                 </LocalizationProvider>
-                            </Stack> */}
+                            </Stack>
 
                             <TextField
                                 label="Enter the Amount"
