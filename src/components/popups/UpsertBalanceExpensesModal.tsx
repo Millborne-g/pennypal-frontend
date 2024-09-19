@@ -69,7 +69,7 @@ export const UpsertBalanceExpensesModal = ({
     const [openErrorSnackBar, setOpenErrorSnackbar] = useState(false);
     const [snackbarText, setSnackbarText] = useState("");
 
-    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());    
+    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
 
     const [load, setLoad] = useState<boolean>(false);
 
@@ -79,15 +79,17 @@ export const UpsertBalanceExpensesModal = ({
 
     const submitAmount = async (e: any) => {
         e.preventDefault();
-        if (category !== "" && amount) {
+        if (category !== "" && amount && selectedDate) {
             const newData = {
                 category: category,
                 amount: amount,
                 user: userDetails._id,
                 ...(note !== "" && { note: note }),
+                date: new Date(selectedDate.toISOString()),
             };
             // console.log("aaaaaaaaaaaah");
             setLoad(true);
+
             await addFunction(newData);
             refetch && refetch();
             setOpenModal(false);
@@ -97,6 +99,8 @@ export const UpsertBalanceExpensesModal = ({
                 setSnackbarText("Please enter an amount.");
             } else if (!category) {
                 setSnackbarText("Choose a category.");
+            } else if (!selectedDate) {
+                setSnackbarText("Please enter the date.");
             }
         }
     };
