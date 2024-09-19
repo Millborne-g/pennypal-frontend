@@ -73,34 +73,55 @@ export const UpsertBalanceExpensesModal = ({
 
     const [load, setLoad] = useState<boolean>(false);
 
+    const [errorCategory, setErrorCategory] = useState(false);
+    const [errorDate, setErrorDate] = useState(false);
+    const [errorAmount, setErrorAmount] = useState(false);
+
     const handleChange = (event: SelectChangeEvent) => {
+        setOpenErrorSnackbar(false);
+        setErrorCategory(false);
         setCategory(event.target.value as string);
     };
 
     const submitAmount = async (e: any) => {
         e.preventDefault();
         if (category !== "" && amount && selectedDate) {
-            const newData = {
-                category: category,
-                amount: amount,
-                user: userDetails._id,
-                ...(note !== "" && { note: note }),
-                date: new Date(selectedDate.toISOString()),
-            };
-            // console.log("aaaaaaaaaaaah");
-            setLoad(true);
+            try {
+                const newData = {
+                    category: category,
+                    amount: amount,
+                    user: userDetails._id,
+                    ...(note !== "" && { note: note }),
+                    date: new Date(selectedDate.toISOString()),
+                };
+                // console.log("aaaaaaaaaaaah");
+                setLoad(true);
 
-            await addFunction(newData);
-            refetch && refetch();
-            setOpenModal(false);
+                await addFunction(newData);
+                refetch && refetch();
+                setOpenModal(false);
+            } catch (error: any) {
+                if (error.message === "Invalid time value") {
+                    setOpenErrorSnackbar(true);
+                    setSnackbarText("Invalid date.");
+                    setErrorDate(true);
+                }
+            }
         } else {
             setOpenErrorSnackbar(true);
+            if (!category) {
+                setSnackbarText("Choose a category.");
+                setErrorCategory(true);
+            }
+
+            if (!selectedDate) {
+                setSnackbarText("Please enter the date.");
+                setErrorDate(true);
+            }
+            
             if (amount <= 0) {
                 setSnackbarText("Please enter an amount.");
-            } else if (!category) {
-                setSnackbarText("Choose a category.");
-            } else if (!selectedDate) {
-                setSnackbarText("Please enter the date.");
+                setErrorAmount(true);
             }
         }
     };
@@ -129,7 +150,7 @@ export const UpsertBalanceExpensesModal = ({
                     <form onSubmit={(e) => submitAmount(e)}>
                         <Stack gap={2}>
                             {addBalExText === "Expense" ? (
-                                <FormControl fullWidth>
+                                <FormControl fullWidth error={errorCategory}>
                                     <InputLabel>Category</InputLabel>
                                     <Select
                                         value={category}
@@ -151,7 +172,7 @@ export const UpsertBalanceExpensesModal = ({
                                     </Select>
                                 </FormControl>
                             ) : (
-                                <FormControl fullWidth>
+                                <FormControl fullWidth error={errorCategory}>
                                     <InputLabel>Category</InputLabel>
                                     <Select
                                         value={category}
@@ -192,9 +213,17 @@ export const UpsertBalanceExpensesModal = ({
                                         <DatePicker
                                             label="Basic date picker"
                                             value={selectedDate}
-                                            onChange={(newValue) =>
-                                                setSelectedDate(newValue)
-                                            }
+                                            // error={true}
+                                            onChange={(newValue) => {
+                                                setSelectedDate(newValue);
+                                                setErrorDate(false);
+                                                setOpenErrorSnackbar(false);
+                                            }}
+                                            slotProps={{
+                                                textField: {
+                                                    error: errorDate,
+                                                },
+                                            }}
                                         />
                                     </DemoContainer>
                                 </LocalizationProvider>
@@ -203,6 +232,7 @@ export const UpsertBalanceExpensesModal = ({
                             <TextField
                                 label="Enter the Amount"
                                 fullWidth
+                                error={errorAmount}
                                 InputProps={{
                                     startAdornment: (
                                         <InputAdornment position="start">
@@ -213,6 +243,8 @@ export const UpsertBalanceExpensesModal = ({
                                 value={amountDisplay}
                                 disabled={load}
                                 onChange={(e) => {
+                                    setOpenErrorSnackbar(false);
+                                    setErrorAmount(false);
                                     let value: any = e.target.value;
                                     if (value === "") {
                                         setAmount(0);
