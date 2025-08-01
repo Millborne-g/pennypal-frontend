@@ -50,6 +50,7 @@ interface ErrorMessage {
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { setCookieWithToken } from "../App";
 
 const schema = yup.object().shape({
     firstName: yup.string().required("First name must be filled!"),
@@ -81,6 +82,7 @@ export const Signup = () => {
         registerUserErrorMessage,
         SnackbarComponent: registerSnackbar,
         loadingMutation,
+        loginUser,
     } = useUser({ email: enteredEmail });
     const loginState = useSelector((state: any) => state.user.login);
 
@@ -201,21 +203,30 @@ export const Signup = () => {
 
     // Cred already exist
     useEffect(() => {
-        if (registerUserErrorMessage) {
-            const { data } = registerUserErrorMessage as ErrorMessage;
-            const code = data?.code; // Non-null assertion
-            console.log(code);
+        const checkUserCred = async () => {
+            if (registerUserErrorMessage) {
+                const { data } = registerUserErrorMessage as ErrorMessage;
+                const code = data?.code; // Non-null assertion
 
-            if (code === 11000) {
-                if (signUpWithGoogle && findUser) {
-                    dispatch(setUser(findUser));
-                } else {
-                    setEmailAlreadyExist(true);
+                if (code === 11000) {
+                    if (signUpWithGoogle && findUser) {
+                        let resultloginUser = await loginUser({
+                            email: enteredEmail,
+                            password: "googlesignin",
+                        }).unwrap();
+                        if (resultloginUser.userToken) {
+                            setCookieWithToken(resultloginUser.userToken);
+                            dispatch(setUser(findUser));
+                        }
+                    } else {
+                        setEmailAlreadyExist(true);
+                    }
                 }
             }
-        }
+        };
+        checkUserCred();
     }, [registerUserErrorMessage, findUser]);
-    
+
     // register new user
     useEffect(() => {
         if (successMutation && userDetails) {
